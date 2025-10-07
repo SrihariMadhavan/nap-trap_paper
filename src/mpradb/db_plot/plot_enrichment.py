@@ -207,7 +207,7 @@ def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen
 
     return_df['feature_name'] = return_df['feature_name'].apply(lambda x: x.split('_')[0])
 
-    return_df.to_csv(f"{db.output_path}/enrichment_of_{klen}mers_{selector_name}_{'_'.join(sample_names)}.to_csv")
+    return_df.to_csv(f"{fig_save_path}/enrichment_of_{klen}mers_{selector_name}_{'_'.join(sample_names)}.to_csv")
 
     return return_df
     

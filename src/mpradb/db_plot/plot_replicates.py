@@ -42,6 +42,10 @@ def plot_replicates(db, selector_name,output_path = None,sample_names = None, re
     reporter_ids = set(db[['reporter_id']].where(db['reporter_group_id'] == selector_id).to_list())
     sample_reporters = set(db[['reporter_id']].where((db['sample_id'].in_(sample_id)) ).to_list())
     reporter_ids = reporter_ids & sample_reporters
+
+    if len(reporter_ids) == 0:
+        raise ValueError('Sample not present in given selector')
+    
     replicate_ids = set(db[['data_id']].where((db['reporter_group_id'] == selector_id)).to_list())
     replicate_ids = set(db[['data_id']].where((db['sample_id'].in_(sample_id)) & (db['data_id'].in_(replicate_ids))).to_list())
 
