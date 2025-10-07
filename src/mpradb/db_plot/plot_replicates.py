@@ -9,8 +9,10 @@ from mpradb.database.mpra_db import MPRA_DB
 import mpradb.db_plot.plotter as plotter 
 
 
-def plot_replicates(db, selector_name,output_path,sample_names = None, reporter_names_to_label = None,fig_save_format = None, reporter_labels = None, colors = None):
+def plot_replicates(db, selector_name,output_path = None,sample_names = None, reporter_names_to_label = None,fig_save_format = None, reporter_labels = None, colors = None):
 
+    if output_path == None:
+        output_path = db.output_path
 
     out_path = f'{output_path}/figures/replicate_comparision/{selector_name}/'
 

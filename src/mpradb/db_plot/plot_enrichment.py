@@ -8,10 +8,14 @@ import mpradb.db_plot.plotter as plotter
 
 
 
-def plot_enrichment(db, reporter_group_name,fig_save_path,sample_names=None, klen = 6,fig_save_format = None):
+def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen = 6,fig_save_format = None):
 
+    reporter_group_name = selector_name
     if fig_save_format == None:
         fig_save_format = 'svg'
+    
+    if fig_save_path == None:
+        fig_save_path = db.output_path
 
     reporter_group_id = db[['reporter_group_id']].where(db['reporter_group_name'] == reporter_group_name).fetchone()
 
@@ -192,9 +196,18 @@ def plot_enrichment(db, reporter_group_name,fig_save_path,sample_names=None, kle
             #if i == 10:
             #    break
         fig.savefig(f"{fig_save_path}Reporter_group_{rgroup_lookup[rgid][0]}_RGID_{rgid}_type_{rgroup_lookup[rgid][1]}.{fig_save_format}")
-    return_df =  db['reporter_group_name', 'feature_name','enrichment_pvalue','enrichment_fold_change'].where((db['reporter_group_id'].in_(rgids)) & (db['feature_type'] == f'count_{klen}mer') &  (db['enrichment_pvalue'] != 1)).to_df()
+    return_df =  db['reporter_group_name','reporter_group_type', 'feature_name','enrichment_pvalue','enrichment_fold_change'].where((db['reporter_group_id'].in_(rgids)) & (db['feature_type'] == f'count_{klen}mer') &  (db['enrichment_pvalue'] != 1)).to_df()
+
+    if scatter_flag:
+        return_df = return_df[return_df['reporter_group_name'].apply(lambda x: ('s1' in x) and ('s2' in x))]
+    else:
+
+        return_df = return_df[return_df['reporter_group_name'].apply(lambda x: ('s1' not in x) and ('s2' not in x))]
+
 
     return_df['feature_name'] = return_df['feature_name'].apply(lambda x: x.split('_')[0])
+
+    return_df.to_csv(f"{db.output_path}/enrichment_of_{klen}mers_{selector_name}_{'_'.join(sample_names)}.to_csv")
 
     return return_df
     

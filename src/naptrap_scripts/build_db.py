@@ -7,6 +7,7 @@ import mpradb.database.mpra_db as mpra_db
 import mpradb.db_features as db_features
 import mpradb.db_data as db_data
 import mpradb.db_analysis as db_analysis
+from mpradb.db_data.generate_tables import generate_tables
 
 #functions to add features to the database
 
@@ -131,6 +132,7 @@ def main():
 
     db = mpra_db.MPRA_DB(db_path = db_path, output_path = output_path, schema_path = schema_path)
     db = make_db(db, params)
+    generate_tables(db)
 
 
 

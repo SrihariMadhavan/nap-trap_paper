@@ -9,8 +9,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def plot_replicate_heatmap(db,reporter_group_name,output_path, sample_names = None, fig_save_format = None):
+def plot_replicate_heatmap(db,selector_name,output_path = None, sample_names = None, fig_save_format = None):
 
+    if output_path == None:
+        output_path = db.output_path
+
+    reporter_group_name = selector_name
     if fig_save_format == None:
         fig_save_format = 'svg'
 
@@ -73,7 +77,11 @@ def plot_replicate_heatmap(db,reporter_group_name,output_path, sample_names = No
     cluster_grid.ax_heatmap.tick_params(axis='both', labelsize=12)
 
     out_path = out_path+f"/Replicate cluster_of_{reporter_group_name}_{'_'.join(sample_names)}_.{fig_save_format}"
-
+    cluster_grid.figure.suptitle(f"Number of reporters (N) = {len(reporter_ids)}", 
+               x=0.95,  # Position horizontally (0=left, 1=right)
+               y=0.98,  # Position vertically (close to top)
+               ha='right',  # Horizontal alignment
+               fontsize=14)
     cluster_grid.figure.savefig(out_path, bbox_inches='tight')
 
     cluster_grid.figure.show()
