@@ -87,11 +87,11 @@ def plot_replicates(db, selector_name,output_path = None,sample_names = None, re
                     ax.annotate(text = t, xy = (replicate_data[n,xidx], replicate_data[n,yidx]), fontsize = 6)
                 
     
-            xlabel = '-'.join(xlabel.split())
-            ylabel = '-'.join(ylabel.split())    
-            fname = f'X{xlabel}Y{ylabel}R{h}-'
+            xlabel = '_'.join(xlabel.split()[1:])
+            ylabel = '_'.join(ylabel.split()[1:])    
+            fname = f'{xlabel}_vs_{ylabel}R{h}-'
             figdate = datetime.datetime.today().strftime('%m%d%y')
-            fig.savefig(f'{out_path}{fname}{figdate}.{fig_save_format}')
+            fig.savefig(f'{out_path}scatterplot_translation_{fname}{figdate}.{fig_save_format}',bbox_inches = 'tight')
                     
 
     return replicate_data[r,:] if reporter_names_to_label else replicate_data

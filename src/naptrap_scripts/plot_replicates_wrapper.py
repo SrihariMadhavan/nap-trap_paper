@@ -10,7 +10,7 @@ def main():
     parser.add_argument('--db',type = str,help = 'database path')
     parser.add_argument('--out',type = str,help='Database output path')
     parser.add_argument('--fig',type=str,default=None,help='Figure save path (Defaults to output path)')
-    parser.add_argument('--selector',type=str,help='Selector to plot replicates of')
+    parser.add_argument('--selector',type=str,help='Selector to plot replicates of (Only 1 selector can be plotted at a time)')
     parser.add_argument('--samples', nargs='*',default=None,help='List of samples to plot. If not used, plots all samples in the selector')
     parser.add_argument('--fig_format',type=str,default=None,help='Format to save the figures in (png, pdf, svg, etc), defaults to svg')
 
@@ -31,7 +31,7 @@ def main():
 
     db = MPRA_DB(db_path=db_path,schema_path='doc/db_schema.sql',output_path = output_path)
 
-    plot_replicates.plot_replicates(db=db, selector_name=selector_name,output_path = fig_save_path,sample_names = sample_names,)
+    plot_replicates.plot_replicates(db=db, selector_name=selector_name,output_path = fig_save_path,sample_names = sample_names,fig_save_format=fig_save_format)
     plot_replicate_heatmap.plot_replicate_heatmap(db=db,selector_name=selector_name,output_path = fig_save_path, sample_names = sample_names, fig_save_format = fig_save_format)
     
 

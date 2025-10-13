@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt; #plt.ion()
 import os
+import re
 import seaborn as sns
 import mpradb.db_plot.plotter as plotter
 
@@ -195,7 +196,24 @@ def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen
             i += 1
             #if i == 10:
             #    break
-        fig.savefig(f"{fig_save_path}Reporter_group_{rgroup_lookup[rgid][0]}_RGID_{rgid}_type_{rgroup_lookup[rgid][1]}.{fig_save_format}")
+        gtype = db[['reporter_group_type']].where(db['reporter_group_id'] == rgid).fetchone()
+        gname = db[['reporter_group_name']].where(db['reporter_group_id'] == rgid).fetchone()
+
+        if ('s1' in gtype):
+            pattern = r's1_(.*?)-translation'
+            matches = re.findall(pattern, gname)
+            gtype = matches[0] + " activated"
+        
+        elif ('s2' in gtype):
+            pattern = r's2_(.*?)-translation'
+            matches = re.findall(pattern, gname)
+            gtype = matches[0] + " activated"
+        
+
+        fig.suptitle(f"{gtype}",fontsize=8)
+        fig.savefig(f"{fig_save_path}Reporter_group_{rgroup_lookup[rgid][0]}_RGID_{rgid}_type_{rgroup_lookup[rgid][1]}.{fig_save_format}",bbox_inches='tight')
+   
+   
     return_df =  db['reporter_group_name','reporter_group_type', 'feature_name','enrichment_pvalue','enrichment_fold_change'].where((db['reporter_group_id'].in_(rgids)) & (db['feature_type'] == f'count_{klen}mer') &  (db['enrichment_pvalue'] != 1)).to_df()
 
     if scatter_flag:
@@ -207,9 +225,29 @@ def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen
 
     return_df['feature_name'] = return_df['feature_name'].apply(lambda x: x.split('_')[0])
 
-    return_df.to_csv(f"{fig_save_path}/enrichment_of_{klen}mers_{selector_name}_{'_'.join(sample_names)}.to_csv")
+    #return_df.to_csv(f"{fig_save_path}/enrichment_of_{klen}mers_{selector_name}_{'_'.join(sample_names)}.to_csv")
+    return_dict = {}
 
-    return return_df
+    sample_string = sample_names if(isinstance(sample_names,str)) else '_'.join(sample_names)
+
+    for group_type in return_df.reporter_group_type.unique():
+        gname = return_df['reporter_group_name'].iloc[0]
+        if ('s1' in group_type):
+            pattern = r's1_(.*?)-translation'
+            matches = re.findall(pattern, gname)
+            group_type = matches[0] + "_activated"
+        
+        elif ('s2' in group_type):
+            pattern = r's2_(.*?)-translation'
+            matches = re.findall(pattern, gname)
+            group_type = matches[0] + "_activated"
+
+        ret = return_df[return_df['reporter_group_type'] == group_type]
+        return_dict[group_type] = ret.copy()
+        ret.to_csv(f"{fig_save_path}/enrichment_of_{group_type}_elements_of_{klen}mers_{selector_name}_{sample_string}.csv",index=False)
+
+
+    return return_dict
     
 
 

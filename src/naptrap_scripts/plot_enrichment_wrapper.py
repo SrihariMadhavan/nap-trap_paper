@@ -1,5 +1,6 @@
 
 import argparse
+from random import sample
 from mpradb.db_plot import plot_enrichment
 from mpradb.database.mpra_db import MPRA_DB
 
@@ -10,9 +11,9 @@ def main():
     parser.add_argument('--db',type = str,help = 'database path')
     parser.add_argument('--out',type = str,help='Database output path')
     parser.add_argument('--fig',type=str,default=None,help='Figure save path (Defaults to output path)')
-    parser.add_argument('--selector',type=str,help='Selector to plot enrichment of')
-    parser.add_argument('--samples', nargs='*',default=None,help='List of samples to plot. If not used, plots all samples in the selector')
-    parser.add_argument('--klen',type=int,default=6,help='Length of Kmers to plot (Defaults to 6)')
+    parser.add_argument('--selector',type=str,help='Selector to plot enrichment of (Only 1 selector can be plotted at a time)')
+    parser.add_argument('--samples', nargs='*',default=None,help='Samples to plot, Samples must be present within the given selector (requires 1-2 samples seperated by a comma)')
+    parser.add_argument('--klen',type=int,default=6,help='Length of Kmers to plot, klen length must be within range of that provided in buildb.toml (Defaults to 6)')
     parser.add_argument('--fig_format',type=str,default=None,help='Format to save the figures in (png, pdf, svg, etc), defaults to svg')
     args = parser.parse_args()
 
@@ -23,6 +24,9 @@ def main():
     sample_names = args.samples
     klen = args.klen
     fig_save_format = args.fig_format
+
+    if  (sample_names == None) or len(sample_names) > 2:
+        raise ValueError(f"Must provide 1-2 samples... Provided samples = {sample_names}")
 
     if fig_save_format != None:
 

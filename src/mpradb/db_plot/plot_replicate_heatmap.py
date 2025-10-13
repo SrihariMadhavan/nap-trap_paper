@@ -76,7 +76,9 @@ def plot_replicate_heatmap(db,selector_name,output_path = None, sample_names = N
     cluster_grid.ax_heatmap.set_ylabel('')
     cluster_grid.ax_heatmap.tick_params(axis='both', labelsize=12)
 
-    out_path = out_path+f"/Replicate cluster_of_{reporter_group_name}_{'_'.join(sample_names)}_.{fig_save_format}"
+    plt.setp(cluster_grid.ax_heatmap.xaxis.get_majorticklabels(), rotation=45, ha='right')
+
+    out_path = out_path+f"/heatmap_cluster_of_{reporter_group_name}_{'_'.join(sample_names)}_.{fig_save_format}"
     cluster_grid.figure.suptitle(f"Number of reporters (N) = {len(reporter_ids)}", 
                x=0.95,  # Position horizontally (0=left, 1=right)
                y=0.98,  # Position vertically (close to top)

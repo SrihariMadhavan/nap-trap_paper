@@ -47,7 +47,7 @@ def main():
     parser.add_argument('-i',type = str,help = 'count file path')
     parser.add_argument('-o',type = str,help = 'output directory')
     parser.add_argument('-f',type = str,help = 'figure save format',default='svg')
-    parser.add_argument('-d',type = str,help = 'data name to analyse',default=None)
+    parser.add_argument('-d',type = str,help = 'run name to analyse (run name must match the name of the replicate files)',default=None)
     args = parser.parse_args()
 
     input_path = args.i
