@@ -43,7 +43,7 @@ def read_cutoff_decision(count_path,out_path,fig_format=None,data_name = None):
     result_df.to_csv(f"{out_path}/Cutoff_vs_Count_table.csv")
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Script to decide the minimum read count cutoff for the selectors")
     parser.add_argument('-i',type = str,help = 'count file path')
     parser.add_argument('-o',type = str,help = 'output directory')
     parser.add_argument('-f',type = str,help = 'figure save format',default='svg')
@@ -53,7 +53,9 @@ def main():
     input_path = args.i
     output_path = args.o
     fig_format = args.f
-    data_name = args.d
+    data_name = args.d if args.d != 'None' else None
+
+
 
     read_cutoff_decision(count_path=input_path,out_path=output_path,fig_format=fig_format,data_name=data_name)
 

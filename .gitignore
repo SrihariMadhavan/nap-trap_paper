@@ -10,4 +10,5 @@ output/*
 *.fai
 *.db
 *.log
+*.pdf
 *egg-info*

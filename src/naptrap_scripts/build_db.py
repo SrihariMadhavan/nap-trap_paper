@@ -3,6 +3,7 @@ import toml
 import pyfaidx
 import warnings
 import os
+from pathlib import Path
 import mpradb.database.mpra_db as mpra_db
 import mpradb.db_features as db_features
 import mpradb.db_data as db_data
@@ -117,8 +118,8 @@ def make_db(db, params):
 
 def main():
 
-    parser = argparse.ArgumentParser(description = 'Build an MPRA database.')
-    parser.add_argument('--toml_path', help = 'Path to build toml')
+    parser = argparse.ArgumentParser(description = 'Build the NaP-TRAP MPRA database (and generate the count and translation tables)')
+    parser.add_argument('--toml_path', help = 'Path to the "build.toml" file, with instructions to build the database')
     args = parser.parse_args()
 
     params = toml.load(args.toml_path)
@@ -132,7 +133,7 @@ def main():
 
     db = mpra_db.MPRA_DB(db_path = db_path, output_path = output_path, schema_path = schema_path)
     db = make_db(db, params)
-    generate_tables(db)
+    generate_tables(db,fasta_path=params['paths']['fasta_path'])
 
 
 
