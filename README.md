@@ -20,7 +20,7 @@ Then `cd` into the folder and run the following commands:
 ```
 cd path/to/naptrap_package/
 pip install --upgrade setuptools pip
-pip install . # Install NaP-TRAP package and core dependencies
+pip install -e . # Install NaP-TRAP package and core dependencies
 ```
 
 ## Overview
