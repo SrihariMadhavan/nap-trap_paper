@@ -19,6 +19,8 @@ readme = "README.MD"
 [tool.setuptools.packages.find]
 where = ["src"] 
 
+[tool.setuptools_scm]
+
 [project.scripts]
 naptrap_count_reads = "naptrap_scripts.count_reads:main"
 naptrap_count_unique = "naptrap_scripts.count_unique:main"

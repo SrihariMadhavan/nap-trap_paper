@@ -38,6 +38,7 @@ def read_cutoff_decision(count_path,out_path,fig_format=None,data_name = None):
         ax.set_ylabel("Number of reporters")
         
         fig.savefig(f"{fig_save_path}read_vs_count_histogram_{data}.{fig_format}")
+        plt.close(fig)
 
     result_df = pd.DataFrame(result_dic, index = cutoff_list).T.reset_index()
     result_df.to_csv(f"{out_path}/Cutoff_vs_Count_table.csv")

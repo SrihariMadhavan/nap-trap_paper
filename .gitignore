@@ -6,6 +6,7 @@ venv/*
 data/*/
 data/*.json
 output/*
+build
 *.fa
 *.fai
 *.db

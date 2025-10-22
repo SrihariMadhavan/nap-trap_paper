@@ -53,9 +53,11 @@ def main():
     if args.command == 'build':
         script_dir = Path(__file__).parent
 
+        tomlpath = Path(args.toml_path)
+        absolute_toml_path = tomlpath.resolve()
 
         build_db_path = str(script_dir / 'build_db.py')
-        cmd = ['python', build_db_path, '--toml_path', args.toml_path]
+        cmd = ['python', build_db_path, '--toml_path', absolute_toml_path]
         
         result = subprocess.run(cmd, cwd=str(script_dir.parent.parent))
         
