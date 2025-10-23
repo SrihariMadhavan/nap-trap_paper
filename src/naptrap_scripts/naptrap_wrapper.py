@@ -27,7 +27,7 @@ def main():
     read_count_decision_parser.add_argument('-i',type = str,help = 'count file paths (regex)')
     read_count_decision_parser.add_argument('-o',type = str,help = 'output directory')
     read_count_decision_parser.add_argument('-f',type = str,help = 'figure save format (defaults to svg)',default='svg')
-    read_count_decision_parser.add_argument('-d',type = str,help = 'run name to analyse (Optional),run name must match the name of the replicate files',default='None')
+    read_count_decision_parser.add_argument('-d', nargs='*',type = str,help = 'run names to analyse (Optional),run names must match the names of the replicate files',default='None')
  
     plot_enrichment_parser = subparsers.add_parser('plot_enrichment', help='Plot the enrichment of kmer features')
     plot_enrichment_parser.add_argument('--db',type = str,help = 'database path')
@@ -73,7 +73,11 @@ def main():
     elif args.command == 'read_cutoff':
         script_dir = Path(__file__).parent
         read_cutoff_path = str(script_dir / 'read_cutoff_decision.py')
-        cmd = ['python', read_cutoff_path, '-i', args.i , '-o' , args.o , '-f' , args.f , '-d' , args.d]
+        cmd = ['python', read_cutoff_path, '-i', args.i , '-o' , args.o , '-f' , args.f , '-d' ,]
+        if isinstance(args.d,list):
+            cmd.extend(args.d)
+        else: 
+            cmd.append(args.d)
         result = subprocess.run(cmd, cwd=os.getcwd())
 
     elif args.command == 'plot_replicates':
@@ -82,9 +86,12 @@ def main():
         plot_replicates_path = str(script_dir / 'plot_replicates_wrapper.py')
         print(plot_replicates_path)
         cmd = ['python', plot_replicates_path, '--db', args.db , '--out', args.out ,
-                '--fig' , args.fig , '--selector' , args.selector , '--samples' ,
-                  ','.join(args.samples) if isinstance(args.samples,list) else args.samples ,
-                  '--fig_format', args.fig_format ]
+                '--fig' , args.fig , '--selector' , args.selector ,'--fig_format', args.fig_format , '--samples']
+        if isinstance(args.samples,list):
+            cmd.extend(args.samples)
+        else: 
+            cmd.append(args.samples)
+                  
         result = subprocess.run(cmd, cwd=os.getcwd())  
 
     elif args.command == 'plot_enrichment':

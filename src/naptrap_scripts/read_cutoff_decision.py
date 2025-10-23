@@ -5,7 +5,7 @@ import argparse
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
-def read_cutoff_decision(count_path,out_path,fig_format=None,data_name = None):
+def read_cutoff_decision(count_path,out_path,fig_format=None,data_names = None):
 
     if not fig_format:
         fig_format = 'svg'
@@ -19,10 +19,18 @@ def read_cutoff_decision(count_path,out_path,fig_format=None,data_name = None):
     cutoff_list = [1,5,10,25,50,100]
     count_dict = json.load(open(count_path,'r'))
     result_dic = {}
+
+    dataflag = False
+
     for data,counts in count_dict.items():
+        
+        if (data_names): 
+            if ( data not in data_names):
+                continue
         print(f" Processing {data}...")
-        if ((data_name) and (data_name != data)):
-            continue
+
+        dataflag = True
+
         npc = []
         for n,c in counts.items():
             if 'spike' not in n:
@@ -40,6 +48,9 @@ def read_cutoff_decision(count_path,out_path,fig_format=None,data_name = None):
         fig.savefig(f"{fig_save_path}read_vs_count_histogram_{data}.{fig_format}")
         plt.close(fig)
 
+    if not dataflag:
+        raise ValueError("Provided Data names not present in count file")
+
     result_df = pd.DataFrame(result_dic, index = cutoff_list).T.reset_index()
     result_df.to_csv(f"{out_path}/Cutoff_vs_Count_table.csv")
 
@@ -48,17 +59,16 @@ def main():
     parser.add_argument('-i',type = str,help = 'count file path')
     parser.add_argument('-o',type = str,help = 'output directory')
     parser.add_argument('-f',type = str,help = 'figure save format',default='svg')
-    parser.add_argument('-d',type = str,help = 'run name to analyse (run name must match the name of the replicate files)',default=None)
+    parser.add_argument('-d', nargs='*',type = str,help = 'run name to analyse (run name must match the name of the replicate files)',default=None)
     args = parser.parse_args()
 
     input_path = args.i
     output_path = args.o
     fig_format = args.f
-    data_name = args.d if args.d != 'None' else None
+    data_names = args.d if args.d != 'None' else None
 
 
-
-    read_cutoff_decision(count_path=input_path,out_path=output_path,fig_format=fig_format,data_name=data_name)
+    read_cutoff_decision(count_path=input_path,out_path=output_path,fig_format=fig_format,data_names=data_names)
 
 
 
