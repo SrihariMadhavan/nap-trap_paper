@@ -98,9 +98,13 @@ def main():
         script_dir = Path(__file__).parent
         plot_enrichment_path = str(script_dir / 'plot_enrichment_wrapper.py')
         cmd = ['python', plot_enrichment_path, '--db', args.db , '--out', args.out ,
-                '--fig' , args.fig , '--selector' , args.selector , '--samples' ,
-                  ','.join(args.samples) if isinstance(args.samples,list) else args.samples ,
-                    '--klen', args.klen , '--fig_format', args.fig_format ]
+                '--fig' , args.fig , '--selector' , args.selector ,'--klen', args.klen ,
+                '--fig_format', args.fig_format , '--samples' ,]
+        if isinstance(args.samples,list):
+            cmd.extend(args.samples)
+        else: 
+            cmd.append(args.samples)
+             
         print(cmd)
         result = subprocess.run(cmd, cwd=os.getcwd())    
     else:
