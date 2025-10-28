@@ -96,7 +96,7 @@ naptrap plot_enrichment    --db path/to/sql/database.db
 |||--selector| Selector to plot replicates of (Only 1 selector can be plotted at a time)||
 |||--samples | List of samples to plot. If not used, plots all samples in the selector||
 |||--fig_format| Format to save the figures in (png, pdf, svg, etc), defaults to svg|
-|`plot_enrichment`|Plots the scatter plot of enrichment groups between samples (If 2 samples provided) or the histogram of enrichment groups for a sample as well as the enrichment volano plots of their corresponding groups| --db |Path to the SQLite database| Enrichment scatterplot (for 2 samples) or histogram (1 sample) , volcano plots and table with enrichment of kmers|
+|`plot _enrichment`|Plots the scatter plot of enrichment groups between samples (If 2 samples provided) or the histogram of enrichment groups for a sample as well as the enrichment volano plots of their corresponding groups| --db |Path to the SQLite database| Enrichment scatterplot (for 2 samples) or histogram (1 sample) , volcano plots and table with enrichment of kmers|
 |||--out|Output path for the SQL database||
 |||--fig| Path to save the figures (Optional, Defaults to the output path)|
 |||--selector| Selector to plot replicates of (Only 1 selector can be plotted at a time)||
@@ -105,27 +105,27 @@ naptrap plot_enrichment    --db path/to/sql/database.db
 
 ## Structure of build.toml
 
-The `build.toml` file contains several different sections. Note not all sections are neccessary for the pipeline to run. For example, if you do not need to add no data to the DB, you can exclude the data section of the `build.toml`.
+The `build.toml` file contains several different sections. Note not all sections are neccessary for the pipeline to run. For example, if you do not need to add no data to the DB, you can exclude the data section of the `build.toml`. **(All paths need to be absolute paths except files present within the github repository)**
 
 ### paths
 
-`[paths]` supplies paths for the pipeline outputs
+`[paths]` supplies paths for the pipeline outputs (⚠️ All user defined paths must be absolute paths not relative)
 
 ```
 [paths]
 db_path = 'output/utr5_fish/utr5_fish.db'
-schema_path = 'doc/db_schema.sql'
+schema_path = 'doc/db_schema.sql' # This path should stay the same as the example
 output_path = 'output/utr5_fish/'
 fasta_path = 'libraries/utr5_fish/reporters.fa'
 ```
 
-`db_path`:  path for SQLite database storing sequencing data and reporter features.
+`db_path`:  path to save the SQLite database storing sequencing data and reporter features
 
 `output_path`: path for output files, tables and (optionally) plots.
 
-`schema_path`: path to the SQLite database schema (To be kept same as the schema path in the example `build.toml` file).
+`schema_path`: path to the SQLite database schema (⚠️ To be kept same as the schema path in the example `build.toml` file).
 
-`fasta_path`: path to fasta containing library reporters and spike ins sequences.  
+`fasta_path`: path to fasta containing library reporters and spike ins sequences.  (⚠️ To be kept same as the schema path in the example `build.toml` file).
 
 `selector_path`: path to the `selector.toml` file with instructions to create selectors for analysis and filtering (refer below)
 

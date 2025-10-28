@@ -10,7 +10,14 @@ version = "0.0.1"
 authors = [{name = "Ethan C Strayer", email = "ethancstrayer@gmail.com"},
             {name = "Srihari Madhavan", email = "smadhavan@uchc.edu"}]
 requires-python = ">=3.9"
-dependencies = ["matplotlib","seaborn","numpy","pandas","pyfaidx","matplotlib-venn","toml","scipy"]
+dependencies = ["matplotlib<3.10",
+                "seaborn<0.14",
+                "numpy<2.2",
+                "pandas<2.3",
+                "pyfaidx<0.9",
+                "matplotlib-venn<1.2",
+                "toml<0.11",
+                "scipy<1.15"]
 license = "MPL-2.0" 
 license-files = ['LICENSE']
 readme = "README.MD"
