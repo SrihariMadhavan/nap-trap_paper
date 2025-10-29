@@ -114,10 +114,10 @@ The `build.toml` file contains several different sections. Note not all sections
 
 ```
 [paths]
-db_path = 'output/utr5_fish/utr5_fish.db'
-schema_path = 'doc/db_schema.sql' # This path should stay the same as the example
-output_path = 'output/utr5_fish/'
-fasta_path = 'libraries/utr5_fish/reporters.fa'
+db_path = 'path/to/save/data.db'
+schema_path = 'doc/db_schema.sql' # Not to be changed
+output_path = 'path/to/output/folder'
+fasta_path = 'libraries/utr5_fish/reporters.fa' # not to be changed (unless custom reporters are used)
 ```
 
 `db_path`:  path to save the SQLite database storing sequencing data and reporter features
@@ -182,7 +182,7 @@ ntrap_utr5_hek293t = 'path/to/hek293t_counts.json'
 ntrap_utr5_fish_pa = 'path/to/fish_pA_counts.json'
 
 ```
-`ntrap_utr5_hek293t` and `ntrap_utr5_fish_pa` are experiment names respectively
+`ntrap_utr5_hek293t` and `ntrap_utr5_fish_pa` are user-defined experiment names respectively
 
 #### samples 
 
