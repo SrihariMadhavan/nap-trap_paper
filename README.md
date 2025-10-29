@@ -11,7 +11,7 @@ pip install naptrap (??)
 ```
 --->
 
-The package has been tested on Python3.9+. To install the package , we highly recommend first creating a Python 3 virtual environment
+The package has been tested on Python3.9+. ⚠️ To install the package , we highly recommend first [creating a Python 3 virtual environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html).
 
 Following this download/clone the repository into your desired folder eg. `path/to/naptrap_package`
 
@@ -19,6 +19,7 @@ Then `cd` into the folder and run the following commands:
 
 ```
 cd path/to/naptrap_package/
+conda activate python_environment
 pip install --upgrade setuptools pip
 pip install -e . # Install NaP-TRAP package and core dependencies
 ```
@@ -55,22 +56,22 @@ naptrap build path/to/build.toml
 ### Plot replicates
 
 ```
-naptrap plot_replicates     --db path/to/sql/database.db
-                            --out output/path
-                            --fig path/for/figures #(Optional, defaults to output/path)
-                            --selector selector_name
-                            --samples sample1 sample2 ...samplen #(Optional , defaults to all samples present in selector)
+naptrap plot_replicates     --db path/to/sql/database.db \
+                            --out output/path \
+                            --fig path/for/figures \ #(Optional, defaults to output/path)
+                            --selector selector_name \
+                            --samples sample1 sample2 ...samplen \ #(Optional , defaults to all samples present in selector)
                             --fig_format 'png' #(Optional format to save figure in)
 
 ```
 ### Plot enrichment
 ```
-naptrap plot_enrichment    --db path/to/sql/database.db
-                            --out output/path
-                            --fig path/for/figures #(Optional, defaults to output/path)
-                            --selector selector_name
-                            --samples sample1 sample2 ...samplen # (Number of samples must be within one or two)
-                            --klen kmer_length 
+naptrap plot_enrichment    --db path/to/sql/database.db \
+                            --out output/path \
+                            --fig path/for/figures \ #(Optional, defaults to output/path)
+                            --selector selector_name \
+                            --samples sample1 sample2 ...samplen \ # (Number of samples must be within one or two)
+                            --klen kmer_length \
                             --fig_format 'png' #(Optional format to save figure in)
 
 ```
@@ -109,7 +110,7 @@ The `build.toml` file contains several different sections. Note not all sections
 
 ### paths
 
-`[paths]` supplies paths for the pipeline outputs (⚠️ All user defined paths must be absolute paths not relative)
+`[paths]` supplies paths for the pipeline outputs (⚠️ **All user defined paths must be absolute paths not relative**)
 
 ```
 [paths]
@@ -123,23 +124,78 @@ fasta_path = 'libraries/utr5_fish/reporters.fa'
 
 `output_path`: path for output files, tables and (optionally) plots.
 
-`schema_path`: path to the SQLite database schema (⚠️ To be kept same as the schema path in the example `build.toml` file).
+`schema_path`: path to the SQLite database schema (⚠️ **DO NOT CHANGE** To be kept same as the schema path in the example `build.toml` file).
 
-`fasta_path`: path to fasta containing library reporters and spike ins sequences.  (⚠️ To be kept same as the schema path in the example `build.toml` file).
+`fasta_path`: path to fasta containing library reporters and spike ins sequences.  ⚠️ **DO NOT CHANGE** To be kept same as the fasta path in the example `build.toml`. If custom reporters need to be used provide the absolute path to the file here and add the `#reporter` or `#spikein` tag to the reporter name
 
 `selector_path`: path to the `selector.toml` file with instructions to create selectors for analysis and filtering (refer below)
+
+### constants
+
+`[constants]` supplies are a set of constants for feature calculation
+
+```
+adaptor_5p = 'GAATACAAGCCCTACACGACGCTCTTCCGATCT' 
+adaptor_3p = 'GTAAACATGGTGAGCAA....TAAGA'
+main_orf_start = 6 
+kozak_score_path = 'doc/kozak.json' 
+
+```
+`adaptor_5p`: 5' fixed reporter sequence (beginning of transcript).
+
+`adaptor_3p`: 3' fixed reporter sequence (end of the transcript)
+
+`main_orf_start`: Start of the main ORF , in the 3' fixed reporter sequence using 0-based coordinates (important for 5'-UTR library and annotated uORFs and oORFs)
+
+`kozak_score_path`: Path to kozak scores ⚠️ **DO NOT CHANGE** To be kept same as the kozak_score_path in the example `build.toml`. If custom kozak scores need to be used provide the absolute path to the file here
+
+### features
+
+`[features]` initialises function parameters for feature generation
+
+```
+kmer_counter = [{kmax = 6}] 
+orf_finder = [{start_codons = ['ATG']}]
+```
+`kmer_counter`: Generates kmers for features, kmax provides maximum number of k-mers to to generate features of
+`orf_finder`: ORFs to find within the insert, will annotate them (uORF/in frame or out of frame oORFs), can additionally detect alternate start codons if provided
+
+### analyses
+
+`[analyses]` initialises the functions for feature analysis
+
+```
+enrichment = [{rnum = 0.1, kmin = 1, kmax = 6}]
+```
+`enrichment` Function to calculate enrichment values for the features generated in the `[features]` section. rnum is the proportion of reporters to delegate to each enrichment group, kmin, kmax are the minimum and maximum length of the kmers to be analysed respectively. (Do not exceed the kmin,kmax provided in features)
 
 ### data
 
 `[data]` specifies parameters for data annotation and analysis. It is divided into several different subtables.
 
+
+#### count_paths
+`[data.count_paths]` provides the path to the `count_reads` files generated by `naptrap count ...`
+
+```
+ntrap_utr5_hek293t = 'path/to/hek293t_counts.json'
+ntrap_utr5_fish_pa = 'path/to/fish_pA_counts.json'
+
+```
+`ntrap_utr5_hek293t` and `ntrap_utr5_fish_pa` are experiment names respectively
+
 #### samples 
 
-`[data.samples]` table contains an entry for each sample being processed. While there is no mechanism of enforcement, parameter names should be consistent. 
+`[data.samples]` initialises the different sample variables (each sample variable denotes a specific sample)
+
+`[data.samples.<insert_sample_name_here>]` here we provide details such as the organism, library, collection time and experiment name for reference for each sample
+
+ `[data.samples.<insert_sample_name.runs>]` here the details of of each run are described  
+Each run (with the same name as that in the count_reads output) is attributed a replicate name and a run type (used above to calculate translation)
 
 ```
 [data.samples.pa_2hpf]
-experiment_name = 'utr5_fish_run1'
+experiment_name = 'ntrap_utr5_fish_pa'
 collection_time = 2
 library = '60A'
 organism = 'Danio rerio`
@@ -150,7 +206,10 @@ data_path = 'sample_data/'
 JBN000414 = {replicate_name = 'B1', run_type = 'input'} 
 JBN000420 = {replicate_name = 'B1', run_type = 'flag_pulldown'}                            
 JBN000415 = {replicate_name = 'B2', run_type = 'input'} 
-JBN000421 = {replicate_name = 'B2', run_type = 'flag_pulldown'}    
+JBN000421 = {replicate_name = 'B2', run_type = 'flag_pulldown'}  
+.
+.
+.  
 ```
 
 `experiment_name`: Name should be shared across samples corresponding to the same experiment (e.g. different timepoints or treatments). Note: one can add samples from multiple experiments simulatanously.
