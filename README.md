@@ -11,7 +11,7 @@ pip install naptrap (??)
 ```
 --->
 
-The package has been tested on Python3.9+. ⚠️ To install the package , we highly recommend first [creating a Python 3 virtual environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html).
+The package has been tested on Python3.11+. ⚠️ To install the package , we highly recommend first [creating a Python 3 virtual environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html).
 
 Following this download/clone the repository into your desired folder eg. `path/to/naptrap_package`
 
@@ -32,7 +32,7 @@ The pipeline takes as an input mapped high-throughput sequencing reads the form 
 
 ### Count
 ```
-naptrap count   -i regex/path/to/sam/files/*.sam \
+naptrap count   -i "regex/path/to/sam/files/*.sam" \ # ⚠️ Must be in quotes
                 -o count/files/output/path/ \
                 -e experiment_id \
                 -t temporary/path/ \
@@ -80,7 +80,7 @@ naptrap plot_enrichment    --db path/to/sql/database.db \
 
 |Subcommand |  Function|Parameters|Explanation| Output|
 |:---------: | :---------:| :-----:|:---------:| :----:|
-| `count`       |counts the number of reads for each reporter in each run and provides a `counts.json` file | -i     |  Input path (regex) to the  `.sam` files | `counts.json` file with read counts for each reporter in each run|
+| `count`       |counts the number of reads for each reporter in each run and provides a `counts.json` file | -i     |  Input path (regex in quotes) to the  `.sam` files | `counts.json` file with read counts for each reporter in each run|
 | ||-o| Path to output the `counts.json` files|
 |||-t|Temporary path for `count` for intermediate files|
 |||-p|Number of Processors to utilize|
