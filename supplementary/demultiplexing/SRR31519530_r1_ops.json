@@ -1,0 +1,12 @@
+[{"name": "rename", "base36": true,
+  "keep_barcode": true,
+  "new_name": "HEK293_input."},
+ {"name":"trim", 
+  "end":3,
+  "algo":"align",
+  "min_score":80, 
+  "add_trimmed":false, 
+  "keep":["trim_exact","trim_align","no_trim"],
+  "sequences":["GTAAACATGGTGAGCAAGGGCGAGGACT"]},
+ {"name": "length",
+  "min_length": 115}]

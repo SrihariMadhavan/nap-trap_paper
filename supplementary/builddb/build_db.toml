@@ -1,0 +1,114 @@
+###########################################
+#
+# This toml file provides instructions and details to the pipeline 
+# on generating the SQL database
+#
+#
+##########################################
+
+
+[paths] # Paths to be provided to the builddb
+db_path = '/home/FCAM/smadhavan/nap_trap_results/ethan_etal/utr5.db' # File path and name for the SQL database to be generated
+schema_path = 'doc/db_schema.sql' # Database SQL Schema for reference (present within repository in the example path)
+output_path = '/home/FCAM/smadhavan/nap_trap_results/ethan_etal' # Default path to output tables and plots generated
+fasta_path = '/home/FCAM/smadhavan/naptrap_toml/ntrap_reporters_with_spikeins_ethan_tagged.fa' # Path to the fasta file with insert sequences and spikeins (must contain #reporter or #spikein tag)
+selector_path = '/home/FCAM/smadhavan/naptrap_toml/selector - JDB.toml' # Path to the selector file (View selector.toml for more details)
+
+# Below are a set of constants for feature calculation
+[constants] 
+adaptor_5p = 'GAATACAAGCCCTACACGACGCTCTTCCGATCT' # 5' fixed reporter sequence (starts at beginning transcript)
+# Below is the 3' fixed reporter sequence (ends at the end of the transcript)
+adaptor_3p = 'GTAAACATGGTGAGCAAGGGCGAGGACTACAAAGACCATGACGGTGATTATAAAGATCATGACATCGATTACAAGGATGACGATGACAAGGAGCTGTTCACCGGGGTGGTGCCCATCCTGGTCGAGCTGGACGGCGACGTAAACGGCCACAAGTTCAGCGTGTCCGGCGAGGGCGAGGGCGATGCCACCTACGGCAAGCTGACCCTGAAGTTCATCTGCACCACCGGCAAGCTGCCCGTGCCCTGGCCCACCCTCGTGACCACCCTGACCTACGGCGTGCAGTGCTTCAGCCGCTACCCCGACCACATGAAGCAGCACGACTTCTTCAAGTCCGCCATGCCCGAAGGCTACGTCCAGGAGCGCACCATCTTCTTCAAGGACGACGGCAACTACAAGACCCGCGCCGAGGTGAAGTTCGAGGGCGACACCCTGGTGAACCGCATCGAGCTGAAGGGCATCGACTTCAAGGAGGACGGCAACATCCTGGGGCACAAGCTGGAGTACAACTACAACAGCCACAACGTCTATATCATGGCCGACAAGCAGAAGAACGGCATCAAGGTGAACTTCAAGATCCGCCACAACATCGAGGACGGCAGCGTGCAGCTCGCCGACCACTACCAGCAGAACACCCCCATCGGCGACGGCCCCGTGCTGCTGCCCGACAACCACTACCTGAGCACCCAGTCCGCCCTGAGCAAAGACCCCAACGAGAAGCGCGATCACATGGTCCTGCTGGAGTTCGTGACCGCCGCCGGGATCACTCTCGGCATGGACGAGCTGTACAAGAAGCTTAGCCATGGCTTCCCGCCGGCGGTGGCGGCGCAGGATGATGGCACGCTGCCCATGTCTTGTGCCCAGGAGAGCGGGATGGACCGTCACCCTGCAGCCTGTGCTTCTGCTAGGATCAATGTGTGACTCGAGCCTCTAGAACTATAGTGAGTCGTATTACGTAGATCCAGACATGATAAGA'
+main_orf_start = 6 # Start of the main ORF (in the 3' fixed reporter sequence using 0-based coordinates). This is important for 5'-UTR library and annotated uORFs and oORFs.
+kozak_score_path = 'doc/kozak.json' # Path to kozak scores (for reference ()present within repository in the example path)
+
+[features] # Function parameters for feature generation
+kmer_counter = [{kmax = 6}] # Maximum number of k-mers to to generate features of
+orf_finder = [{start_codons = ['ATG']}] # ORFs to find within the insert, will annotate them (uORF/in frame or out of frame oORFs), can additionally detect alternate start codons if provided
+
+
+[analyses] # Function parameters for analysis
+enrichment = [{rnum = 0.1, kmin = 1, kmax = 6}] # Parameters for the kmer enrichment function 
+# rnum = Proportion of reporters to consider in each enrichment group, in this example top/bottom 10%
+# kmin,kmax = Minimum and Maximum kmers to analyse (Must be lesser than or equal to the kmax provided in the kmer counter)
+
+
+ # Paths to the count json files obtained from the `count_reads` function
+[data.count_paths]
+ntrap_utr5_hek293t = '/home/FCAM/smadhavan/nap_trap_results/utr5/nap_trap_strayer_et_al_Nat_Communications_2024_hek293t/nap_trap_strayer_et_al_Nat_Communications_2024_hek293t_091525_counts.json'
+ntrap_utr5_fish_pa = '/home/FCAM/smadhavan/nap_trap_results/utr5/nap_trap_strayer_et_al_Nat_Communications_2024_fish_pA/nap_trap_strayer_et_al_Nat_Communications_2024_fish_pA_091525_counts.json'
+
+###############################
+#
+# The below section initialises the different sample variables (each sample variable denotes a specific sample)
+#
+# The sample variables are initialised in the format of [data.samples.<insert sample name here>]
+# For each sample name we provide details such as the organism, library, collection time and experiment name for reference
+#
+#
+# Following these sections are sections of the format [data.samples.<insert sample name>.runs]
+#
+# These sections are where the details of of each run are described  
+# Here each run (with th same name as that in the count_reads output) is attributed a replicate name and a run type (used above to calculate translation)
+#
+#
+###############################
+
+[data.samples.pa_2hpf]
+experiment_name = 'ntrap_utr5_fish_pa'
+collection_time = 2
+library = '60A'
+organism = 'Danio rerio'
+[data.samples.pa_2hpf.runs]
+JBR001247 = {replicate_name = 'B1', run_type = 'input'}
+JBR001248 = {replicate_name = 'B2', run_type = 'input'}
+JBR001249 = {replicate_name = 'B1', run_type = 'flag_pulldown'}
+JBR001250 = {replicate_name = 'B2', run_type = 'flag_pulldown'}
+
+
+
+[data.samples.pa_6hpf]
+experiment_name = 'ntrap_utr5_fish_pa'
+collection_time = 6
+library = '60A'
+organism = 'Danio rerio'
+
+[data.samples.pa_6hpf.runs]
+JBR001251 = {replicate_name = 'B1', run_type = 'input'}
+JBR001252 = {replicate_name = 'B2', run_type = 'input'}
+JBR001253 = {replicate_name = 'B1', run_type = 'flag_pulldown'}
+JBR001254 = {replicate_name = 'B2', run_type = 'flag_pulldown'}
+
+
+[data.samples.hek293t_12h]
+experiment_name = 'ntrap_utr5_hek293t'
+time = 12
+library = '60A'
+collection_time = 12
+organism = 'Homo sapiens'
+
+[data.samples.hek293t_12h.runs]
+JBR001255 = {replicate_name = 'B1', run_type = 'input'}
+JBR001256 = {replicate_name = 'B2', run_type = 'input'}
+JBR001257 = {replicate_name = 'B3', run_type = 'input'}
+JBR001258 = {replicate_name = 'B4', run_type = 'input'}
+JBR001259 = {replicate_name = 'B1', run_type = 'flag_pulldown'}
+JBR001260 = {replicate_name = 'B2', run_type = 'flag_pulldown'}
+JBR001261 = {replicate_name = 'B3', run_type = 'flag_pulldown'}
+JBR001262 = {replicate_name = 'B4', run_type = 'flag_pulldown'}
+
+
+# The next section defines how translation values are calculated for each samples
+[data.functions]
+calculate_delta = [{samples = ['pa_2hpf','pa_6hpf','hek293t_12h'], num_run_type = 'flag_pulldown', denom_run_type = 'input', data_type = 'translation'}] # Function to calculate translation values  
+# samples = the samples to be includes for analyses, must be named as defined below in data.samples.X 
+# num_run_type = run types to be used in numerator for translation calculation (initialised below)
+# num_denom_type = run types to be used in denominator for translation calculation (initialised below) 
+# data_type = tag to provide for the calculation
+
+[data.spike_ins] # This section is for spikeins to be excluded from the analysis if required (names in the fasta file excluding the tag). Omit this section for samples using all spike-ins.
+pa_2hpf = {spike_ins_to_exclude = ['ntrap_spike_3']}
+pa_6hpf = {spike_ins_to_exclude = ['ntrap_spike_3']}
+
+
+

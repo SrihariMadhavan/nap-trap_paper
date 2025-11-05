@@ -1,0 +1,33 @@
+[ 
+{"name":"trim",
+ "end":3, 
+ "algo":"align", 
+ "min_score":75, 
+ "add_trimmed": false, 
+ "keep":["trim_exact","trim_align"], 
+ "sequences":["GCGTCATGGTCTTTGTAGTCCTCGCCCTTGCTCACCATGTTTAC","ACCGTCATGGTCTTTGTAGTCCTCGCCCTTGCTCACCATGTTTAC"],
+ "apply_trim_seq": true},
+
+{"name":"demultiplex",
+"end":3,
+"max_mismatch":2,
+"barcodes": ["TAGCTT",
+			 "GATCAG",
+			 "ACTTGA",
+			 "CTAGCT"]},
+
+{"name":"trim", 
+"end":3, 
+"algo":"match", 
+"position":14, 
+"min_score":0.75, 
+"add_trimmed": false,
+"keep":["trim_exact","trim_align"], 
+"sequences":["TAAC","ATTC"], 
+"apply_trim_seq": true},
+
+{"name":"clip", 
+"end":3, 
+"length":10, 
+"add_clipped": true}
+]

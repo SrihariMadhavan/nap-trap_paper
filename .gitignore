@@ -8,6 +8,7 @@ data/*.json
 output/*
 build/
 examples/
+libraries/
 #*.fa
 *.fai
 *.db
