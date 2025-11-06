@@ -117,7 +117,7 @@ The `build.toml` file contains several different sections. Note not all sections
 db_path = 'path/to/save/data.db'
 schema_path = 'doc/db_schema.sql' # Not to be changed
 output_path = 'path/to/output/folder'
-fasta_path = 'libraries/utr5_fish/reporters.fa' # not to be changed (unless custom reporters are used)
+fasta_path = 'doc/reporters.fa' # not to be changed (unless custom reporters are used)
 ```
 
 `db_path`:  path to save the SQLite database storing sequencing data and reporter features

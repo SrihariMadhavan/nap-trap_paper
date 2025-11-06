@@ -8,11 +8,11 @@
 
 
 [paths] # Paths to be provided to the builddb
-db_path = '/home/FCAM/smadhavan/nap_trap_results/ethan_etal/utr5.db' # File path and name for the SQL database to be generated
+db_path = '/path/to/store/utr5.db' # File path and name for the SQL database to be generated
 schema_path = 'doc/db_schema.sql' # Database SQL Schema for reference (present within repository in the example path)
-output_path = '/home/FCAM/smadhavan/nap_trap_results/ethan_etal' # Default path to output tables and plots generated
-fasta_path = '/home/FCAM/smadhavan/naptrap_toml/ntrap_reporters_with_spikeins_ethan_tagged.fa' # Path to the fasta file with insert sequences and spikeins (must contain #reporter or #spikein tag)
-selector_path = '/home/FCAM/smadhavan/naptrap_toml/selector - JDB.toml' # Path to the selector file (View selector.toml for more details)
+output_path = '/path/to/output' # Default path to output tables and plots generated
+fasta_path = 'doc/reporters.fa' # Path to the fasta file with insert sequences and spikeins (must contain #reporter or #spikein tag)
+selector_path = '/path/to/selector.toml' # Path to the selector file (View selector.toml for more details)
 
 # Below are a set of constants for feature calculation
 [constants] 
@@ -35,8 +35,8 @@ enrichment = [{rnum = 0.1, kmin = 1, kmax = 6}] # Parameters for the kmer enrich
 
  # Paths to the count json files obtained from the `count_reads` function
 [data.count_paths]
-ntrap_utr5_hek293t = '/home/FCAM/smadhavan/nap_trap_results/utr5/nap_trap_strayer_et_al_Nat_Communications_2024_hek293t/nap_trap_strayer_et_al_Nat_Communications_2024_hek293t_091525_counts.json'
-ntrap_utr5_fish_pa = '/home/FCAM/smadhavan/nap_trap_results/utr5/nap_trap_strayer_et_al_Nat_Communications_2024_fish_pA/nap_trap_strayer_et_al_Nat_Communications_2024_fish_pA_091525_counts.json'
+ntrap_utr5_hek293t = '/path/to/hek293t_counts.json'
+ntrap_utr5_fish_pa = '/path/to/fish_pA_counts.json'
 
 ###############################
 #
