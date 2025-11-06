@@ -126,7 +126,7 @@ fasta_path = 'doc/reporters.fa' # not to be changed (unless custom reporters are
 
 `schema_path`: path to the SQLite database schema (⚠️ **DO NOT CHANGE** To be kept same as the schema path in the example `build.toml` file).
 
-`fasta_path`: path to fasta containing library reporters and spike ins sequences.  ⚠️ **DO NOT CHANGE** To be kept same as the fasta path in the example `build.toml`. If custom reporters need to be used provide the absolute path to the file here and add the `#reporter` or `#spikein` tag to the reporter name
+`fasta_path`: path to fasta containing library reporters and spike ins sequences.  ⚠️ **DO NOT CHANGE** To be kept same as the fasta path in the example `build.toml`. If custom reporters need to be used provide the absolute path to the file here and add the `#reporter` or `#spikein` tag to the reporter name. Insert names must be the same as one used for bowtie alignment
 
 `selector_path`: path to the `selector.toml` file with instructions to create selectors for analysis and filtering (refer below)
 
