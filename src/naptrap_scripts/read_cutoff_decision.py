@@ -26,6 +26,7 @@ def read_cutoff_decision(count_path,out_path,fig_format=None,data_names = None):
         
         if (data_names): 
             if ( data not in data_names):
+                print(f" Skipping {data}...")
                 continue
         print(f" Processing {data}...")
 
@@ -65,9 +66,9 @@ def main():
     input_path = args.i
     output_path = args.o
     fig_format = args.f
-    data_names = args.d if args.d != 'None' else None
+    data_names = args.d if args.d != ['None'] else None
 
-
+    print(f"Selected Sample names : {data_names}")
     read_cutoff_decision(count_path=input_path,out_path=output_path,fig_format=fig_format,data_names=data_names)
 
 
