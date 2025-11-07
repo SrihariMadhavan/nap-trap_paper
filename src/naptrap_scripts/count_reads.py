@@ -302,6 +302,9 @@ def main():
     proc_num = args.p
     tmp_path = path_test(args.t)
 
+    if isinstance(tmp_path , str):
+        tmp_path = tmp_path + '/' if tmp_path[-1] != '/' else tmp_path
+
     paired_end = args.paired
 
     Aligned_Read.edit_distance = args.d1
