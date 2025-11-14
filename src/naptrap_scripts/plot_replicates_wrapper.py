@@ -20,7 +20,7 @@ def main():
     output_path = args.out
     fig_save_path = args.fig if args.fig != 'None' else None
     selector_name = args.selector
-    sample_names = args.samples if ['None'] not in args.samples  else None
+    sample_names = args.samples if 'None' not in args.samples  else None
 
     fig_save_format = args.fig_format
 
