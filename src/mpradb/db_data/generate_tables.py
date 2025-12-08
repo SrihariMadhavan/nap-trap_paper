@@ -98,18 +98,24 @@ def unfiltered_tables(db,sample_data_groups,selector_out_path):
     ndf.to_csv(f'{unfiltered_path}normalized_counts.csv',index=False)
     print(f'Norm counts generated in {unfiltered_path}')
 
+    ## TODO fix processed value table generation
+    tdf = db[['data_id','data_group_id','reporter_id','processed_data_value']].to_df()
+    tdf = tdf.merge(db[['reporter_id','reporter_name']].to_df(),on='reporter_id')
+    tdf = tdf.merge(db[['data_id','sample_name']].to_df(),on='data_id')
+    tdf = tdf.merge(db[['replicate_id','replicate_name','data_id']].to_df(),on='data_id')
+    tdf = tdf.merge(db[['data_group_id','data_group_type']].to_df(),on='data_group_id')
 
-    tdf = db[['data_id','replicate_name','sample_name','reporter_name','processed_data_value']].to_df()
     print(f"translation table fetched in unfiltered")
     tdf = tdf[tdf['sample_name'].isin(sample_data_groups)]
-    tdf['info'] = tdf.apply(lambda x:f"translation_{x['sample_name']}_{x['replicate_name'].split('-')[-1]}" , axis=1 )
-    mean_trans = tdf.groupby(by=['reporter_name','sample_name',],as_index=False).processed_data_value.mean()
-    mean_trans = mean_trans.pivot(index='reporter_name', columns='sample_name',values='processed_data_value')
-    mean_trans.columns = [f'mean_translation_{col}' for col in mean_trans.columns]
+    tdf['info'] = tdf.apply(lambda x:f"{x['sample_name']}_{x['replicate_name'].split('-')[-1]}" , axis=1 ) #{'_'.join(x['data_group_type'].split('_')[1:])}_
+    mean_trans = tdf.groupby(by=['reporter_name','data_group_type','sample_name',],as_index=False).processed_data_value.mean()
+    mean_trans = mean_trans.pivot(index=['reporter_name','data_group_type'], columns='sample_name',values='processed_data_value')
+    mean_trans.columns = [f'mean_delta_{col}' for col in mean_trans.columns]
     mean_trans.reset_index(inplace=True)
-    ntdf = tdf.pivot(index='reporter_name', columns='info',values='processed_data_value')
+    ntdf = tdf.pivot(index=['reporter_name','data_group_type'], columns='info',values='processed_data_value')
     ntdf.reset_index(inplace=True)
-    ntdf = ntdf.merge(mean_trans,on = 'reporter_name')
+    ntdf = ntdf.merge(mean_trans,on = ['reporter_name','data_group_type'])
+    ntdf['data_group_type'] = ntdf['data_group_type'].apply(lambda x: '_'.join(x.split('_')[1:]))
     ntdf.to_csv(f'{unfiltered_path}translation.csv',index=False)
     print(f'Translation generated in {unfiltered_path}')
 
@@ -152,16 +158,23 @@ def filtered_tables(db,sample_data_groups,selector,selector_out_path):
 
 
 
-    tdf = db[['data_id','replicate_name','sample_name','reporter_name','processed_data_value']].to_df()
+    tdf = db[['data_id','data_group_id','reporter_id','processed_data_value']].to_df()
+    tdf = tdf.merge(db[['reporter_id','reporter_name']].to_df(),on='reporter_id')
+    tdf = tdf.merge(db[['data_id','sample_name']].to_df(),on='data_id')
+    tdf = tdf.merge(db[['replicate_id','replicate_name','data_id']].to_df(),on='data_id')
+    tdf = tdf.merge(db[['data_group_id','data_group_type']].to_df(),on='data_group_id')
+
+    print(f"translation table fetched in unfiltered")
     tdf = tdf[(tdf['sample_name'].isin(sample_data_groups)) & (tdf['reporter_name'].isin(selector_reporters))]
-    tdf['info'] = tdf.apply(lambda x:f"translation_{x['sample_name']}_{x['replicate_name'].split('-')[-1]}" , axis=1 )
-    mean_trans = tdf.groupby(by=['reporter_name','sample_name',],as_index=False).processed_data_value.mean()
-    mean_trans = mean_trans.pivot(index='reporter_name', columns='sample_name',values='processed_data_value')
-    mean_trans.columns = [f'mean_translation_{col}' for col in mean_trans.columns]
+    tdf['info'] = tdf.apply(lambda x:f"{x['sample_name']}_{x['replicate_name'].split('-')[-1]}" , axis=1 ) #{'_'.join(x['data_group_type'].split('_')[1:])}_
+    mean_trans = tdf.groupby(by=['reporter_name','data_group_type','sample_name',],as_index=False).processed_data_value.mean()
+    mean_trans = mean_trans.pivot(index=['reporter_name','data_group_type'], columns='sample_name',values='processed_data_value')
+    mean_trans.columns = [f'mean_delta_{col}' for col in mean_trans.columns]
     mean_trans.reset_index(inplace=True)
-    ntdf = tdf.pivot(index='reporter_name', columns='info',values='processed_data_value')
+    ntdf = tdf.pivot(index=['reporter_name','data_group_type'], columns='info',values='processed_data_value')
     ntdf.reset_index(inplace=True)
-    ntdf = ntdf.merge(mean_trans,on = 'reporter_name')
+    ntdf = ntdf.merge(mean_trans,on = ['reporter_name','data_group_type'])
+    ntdf['data_group_type'] = ntdf['data_group_type'].apply(lambda x: '_'.join(x.split('_')[1:]))
     ntdf.to_csv(f'{filtered_path}translation.csv',index=False)
     print(f'Translation generated in {filtered_path}')
     return
