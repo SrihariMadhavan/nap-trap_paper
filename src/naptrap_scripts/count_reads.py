@@ -304,6 +304,12 @@ def main():
 
     if isinstance(tmp_path , str):
         tmp_path = tmp_path + '/' if tmp_path[-1] != '/' else tmp_path
+    
+    print(f'Temporary path set to: {tmp_path}')
+
+    print(f'Output path set to: {output_path}')
+    print(f'Experiment ID set to: {experiment_id}')
+    print(f'Number of processors set to: {proc_num}')
 
     paired_end = args.paired
 

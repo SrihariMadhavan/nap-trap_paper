@@ -98,7 +98,7 @@ def unfiltered_tables(db,sample_data_groups,selector_out_path):
     ndf.to_csv(f'{unfiltered_path}normalized_counts.csv',index=False)
     print(f'Norm counts generated in {unfiltered_path}')
 
-    ## TODO fix processed value table generation
+    
     tdf = db[['data_id','data_group_id','reporter_id','processed_data_value']].to_df()
     tdf = tdf.merge(db[['reporter_id','reporter_name']].to_df(),on='reporter_id')
     tdf = tdf.merge(db[['data_id','sample_name']].to_df(),on='data_id')
