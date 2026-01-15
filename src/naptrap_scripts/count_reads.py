@@ -7,6 +7,7 @@ import multiprocessing
 import json
 import os
 import subprocess
+from functools import partial
 
 paired_end = False
 tmp_path = None
@@ -141,7 +142,20 @@ class ReadPair:
 
 
 
-def read_accepted_hits(path_run_id):
+def read_accepted_hits(path_run_id,tmp_path = tmp_path, today = today,
+                        paired_end = paired_end, edit_distance1 = 100, min_matches1 = 0,
+                        edit_distance2 = 100, min_matches2 = 0):
+
+    Aligned_Read.edit_distance = edit_distance1
+    Aligned_Read.min_matches = min_matches1
+
+    ReadPair.edit_distance_r1 = edit_distance1
+    ReadPair.min_matches_r1 = min_matches1
+    ReadPair.edit_distance_r2 = edit_distance2
+    ReadPair.min_matches_r2 = min_matches2
+
+    print(f'Temporary path set to: {tmp_path}')
+    print(f'Paired end status: {paired_end}')
 
     fpath, run_id = path_run_id
     ftype = fpath.split('/')[-1] #Making sure '.' in fpath doesnt interfere with ftype
@@ -186,8 +200,11 @@ def read_accepted_hits(path_run_id):
                     print(e, f'{e}, file: {fpath}, read_id: {mapped_read.read1.read_id}, {mapped_read.read2.read_id}')
                     mapped_read.read1 = mapped_read.read2
                     mapped_read.read2 = None
+                else:
+                    print(e, f'{e}, file: {fpath}, read_id: {mapped_read.read_id}')
+                    raise e
                 continue
-
+    print(f'Temporarily wrote raw counts to {tmp_path}{run_id}_{today}_rawcounts.json')
     file_name = f'{tmp_path}{run_id}_{today}_rawcounts.json'
     json.dump(reporter_dic, open(file_name,'w'))
 
@@ -195,7 +212,8 @@ def read_accepted_hits(path_run_id):
 
 
 
-def read_fasta(path_run_id):
+def read_fasta(path_run_id, tmp_path = tmp_path, today = today):
+
 
     fpath, run_id = path_run_id
     reporter_dic = {}
@@ -313,13 +331,13 @@ def main():
 
     paired_end = args.paired
 
-    Aligned_Read.edit_distance = args.d1
-    Aligned_Read.min_matches = args.m1
 
-    ReadPair.edit_distance_r1 = args.d1
-    ReadPair.min_matches_r1 = args.m1
-    ReadPair.edit_distance_r2 = args.d2
-    ReadPair.min_matches_r2 = args.m2
+    edit_distance1 = args.d1
+    min_matches1 = args.m1
+    edit_distance2 = args.d2
+    min_matches2 = args.m2
+
+
 
     input_regex = input_regex.replace('.zstd','')
     ftype = '.'.join(input_regex.split('.')[1:])
@@ -332,9 +350,13 @@ def main():
 
     with multiprocessing.Pool(proc_num) as pool:
         if ftype == 'sam.zst' or ftype == 'bam' or ftype == 'sam':
-            results = pool.map(read_accepted_hits, path_run_ids)  
+            results = pool.map(partial(read_accepted_hits, tmp_path = tmp_path, today = today,
+                                       edit_distance1 = edit_distance1, min_matches1 = min_matches1,
+                                       edit_distance2 = edit_distance2, min_matches2 = min_matches2,
+                                       paired_end = paired_end), path_run_ids)  
+  
         elif ftype == 'fasta':
-            results = pool.map(read_fasta,path_run_ids)
+            results = pool.map(partial(read_fasta, tmp_path = tmp_path, today = today), path_run_ids)
         else:
             raise Exception(f'File type {ftype} not valid')
 
