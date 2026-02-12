@@ -7,7 +7,8 @@ import datetime
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+import warnings
+warnings.filterwarnings("ignore")
 
 def plot_replicate_heatmap(db,selector_name,output_path = None, sample_names = None, fig_save_format = None):
 

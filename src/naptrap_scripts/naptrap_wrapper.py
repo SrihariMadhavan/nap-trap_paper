@@ -34,7 +34,7 @@ def main():
     plot_enrichment_parser.add_argument('--out',type = str,help='Database output path')
     plot_enrichment_parser.add_argument('--fig',type=str,default='None',help='Figure save path (Defaults to output path)')
     plot_enrichment_parser.add_argument('--selector',type=str,help='Selector to plot enrichment of (Only 1 selector can be plotted at a time)')
-    plot_enrichment_parser.add_argument('--samples', nargs='*',default='None',help='Samples to plot, Samples must be present within the given selector (requires 1-2 samples seperated by a comma)')
+    plot_enrichment_parser.add_argument('--samples', nargs='*',default='None',help='Samples to plot. Samples must be present within the given selector (requires 1-2 samples seperated by spaces)')
     plot_enrichment_parser.add_argument('--klen',type=str,default='6',help='Length of Kmers to plot, klen length must be within range of that provided in buildb.toml (Defaults to 6)')
     plot_enrichment_parser.add_argument('--fig_format',type=str,default='svg',help='Format to save the figures in (png, pdf, svg, etc), defaults to svg')
  
@@ -44,7 +44,7 @@ def main():
     plot_replicates_parser.add_argument('--out',type = str,help='Database output path')
     plot_replicates_parser.add_argument('--fig',type=str,default='None',help='Figure save path (Defaults to output path)')
     plot_replicates_parser.add_argument('--selector',type=str,help='Selector to plot replicates of (Only 1 selector can be plotted at a time)')
-    plot_replicates_parser.add_argument('--samples', nargs='*',default='None',help='List of samples to plot. If not used, plots all samples in the selector')
+    plot_replicates_parser.add_argument('--samples', nargs='*',default='None',help='List of samples to plot (separated by spaces). If not used, plots all samples in the selector')
     plot_replicates_parser.add_argument('--fig_format',type=str,default='svg',help='Format to save the figures in (png, pdf, svg, etc), defaults to svg')
 
 

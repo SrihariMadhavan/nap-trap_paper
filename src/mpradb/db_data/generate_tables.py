@@ -110,7 +110,7 @@ def unfiltered_tables(db,sample_data_groups,selector_out_path):
     tdf['info'] = tdf.apply(lambda x:f"{x['sample_name']}_{x['replicate_name'].split('-')[-1]}" , axis=1 ) #{'_'.join(x['data_group_type'].split('_')[1:])}_
     mean_trans = tdf.groupby(by=['reporter_name','data_group_type','sample_name',],as_index=False).processed_data_value.mean()
     mean_trans = mean_trans.pivot(index=['reporter_name','data_group_type'], columns='sample_name',values='processed_data_value')
-    mean_trans.columns = [f'mean_delta_{col}' for col in mean_trans.columns]
+    mean_trans.columns = [f'mean_replicates_{col}' for col in mean_trans.columns]
     mean_trans.reset_index(inplace=True)
     ntdf = tdf.pivot(index=['reporter_name','data_group_type'], columns='info',values='processed_data_value')
     ntdf.reset_index(inplace=True)
@@ -169,7 +169,7 @@ def filtered_tables(db,sample_data_groups,selector,selector_out_path):
     tdf['info'] = tdf.apply(lambda x:f"{x['sample_name']}_{x['replicate_name'].split('-')[-1]}" , axis=1 ) #{'_'.join(x['data_group_type'].split('_')[1:])}_
     mean_trans = tdf.groupby(by=['reporter_name','data_group_type','sample_name',],as_index=False).processed_data_value.mean()
     mean_trans = mean_trans.pivot(index=['reporter_name','data_group_type'], columns='sample_name',values='processed_data_value')
-    mean_trans.columns = [f'mean_delta_{col}' for col in mean_trans.columns]
+    mean_trans.columns = [f'mean_replicates_{col}' for col in mean_trans.columns]
     mean_trans.reset_index(inplace=True)
     ntdf = tdf.pivot(index=['reporter_name','data_group_type'], columns='info',values='processed_data_value')
     ntdf.reset_index(inplace=True)

@@ -6,9 +6,9 @@ class Selector:
         self.sample_names = params['sample_names']
         self.data_types = params['data_types']
         self.read_filters = params['read_filters']
-        self.features_to_exclude = params['features_to_exclude']
-        self.features_to_include = params['features_to_include']
-        self.filter_features = params['filter_features'] 
+        self.features_to_exclude = params['features_to_exclude'] if 'features_to_exclude' in params else []
+        self.features_to_include = params['features_to_include'] if 'features_to_include' in params else []
+        self.filter_features = params['filter_features'] if 'filter_features' in params else []
         self.reporter_ids = []
         self.db = db
 

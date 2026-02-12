@@ -6,7 +6,8 @@ import os
 import re
 import seaborn as sns
 import mpradb.db_plot.plotter as plotter
-
+import warnings
+warnings.filterwarnings("ignore")
 
 
 def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen = 6,fig_save_format = None):
@@ -124,7 +125,7 @@ def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen
         rnum_calc = db[['reporter_group_description','reporter_group_id']].where(db['reporter_group_id'].in_(selector_ids)).fetchone()
 
         rnum_calc = float(rnum_calc.split(' ')[-1])
-        print(rnum_calc)
+        print(f"Using cutoff of {rnum_calc} for histogram")
 
         reporter_list = db['reporter_id'].where(db['reporter_group_name']==reporter_group_name).to_list()
         fulldf = db[['reporter_id','sample_name','processed_data_value']].where((db['reporter_id'].in_(reporter_list)) & (db['sample_name'] == (sample_names))).to_df()
