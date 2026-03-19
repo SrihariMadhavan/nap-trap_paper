@@ -138,7 +138,7 @@ def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen
         bottom_p = fulldf.processed_data_value.quantile(rnum_calc)
         pal = {'Activated': "#56B4E9",'Repressed':"#E69F00",'No Change': "#999999"}
         fulldf[''] = fulldf['processed_data_value'].apply(lambda x: 'Activated' if x > top_p else 'Repressed' if x < bottom_p else 'No Change')
-        fig,ax = plt.subplots(1,1)
+        fig,ax = plt.subplots(1,1,figsize=(10,10))
         ax = sns.histplot(fulldf,x='processed_data_value',hue = '',multiple='stack',bins=100,palette=pal,ax=ax)
         plt.xlabel(f"{sample_names} Translation")
         plt.ylabel(f"Reporter Count")
@@ -193,7 +193,7 @@ def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen
         for p,f,s in zip(pval_list, fc_list, fn_labels):
             sorted_f = sorted(fc_list)
             if p > -np.log10(pthresh) and (f in sorted_f[:10] or f in sorted_f[len(sorted_f)-10:]):
-                ax.text(x = p, y = f, s = s, fontsize = 2, color = pal[cidx])
+                ax.text(x = p, y = f, s = s, fontsize = 5, color = pal[cidx])
             i += 1
             #if i == 10:
             #    break
@@ -226,6 +226,8 @@ def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen
 
     return_df['feature_name'] = return_df['feature_name'].apply(lambda x: x.split('_')[0])
 
+    return_df['enrichment_pvalue'] = return_df['enrichment_pvalue'].apply(lambda x: 1-x if x > 0.5 else x)
+
     #return_df.to_csv(f"{fig_save_path}/enrichment_of_{klen}mers_{selector_name}_{'_'.join(sample_names)}.to_csv")
     return_dict = {}
 
@@ -236,16 +238,19 @@ def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen
         if ('s1' in group_type):
             pattern = r's1_(.*?)-translation'
             matches = re.findall(pattern, gname)
-            group_type = matches[0] + "_activated"
+            proper_group_type = matches[0] + "_activated"
         
         elif ('s2' in group_type):
             pattern = r's2_(.*?)-translation'
             matches = re.findall(pattern, gname)
-            group_type = matches[0] + "_activated"
+            proper_group_type = matches[0] + "_activated"
+        else:
+            proper_group_type = group_type
 
         ret = return_df[return_df['reporter_group_type'] == group_type]
-        return_dict[group_type] = ret.copy()
-        ret.to_csv(f"{fig_save_path}/enrichment_of_{group_type}_elements_of_{klen}mers_{selector_name}_{sample_string}.csv",index=False)
+
+        return_dict[proper_group_type] = ret.copy()
+        ret.to_csv(f"{fig_save_path}/enrichment_of_{proper_group_type}_elements_of_{klen}mers_{selector_name}_{sample_string}.csv",index=False)
 
 
     return return_dict

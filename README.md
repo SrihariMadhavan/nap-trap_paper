@@ -1,15 +1,8 @@
 # NaP-TRAP: A flexible approach to investigate the role of cis-elements in mRNA translation and decay
 
-This repository provides a pipeline for processing NaP-TRAP sequencing, it is referenced by the manuscript published here. Nascent Peptide Translating Ribosome Affinity Purification is a massively parallel reporter assayed that measures the translation of thousands of reporters simultanously through the immunocapture of epitope tagged nacscent chain complexes. 
+This repository provides a pipeline for processing NaP-TRAP sequencing data, it is referenced by the manuscript published here. Nascent-Peptide Translating Ribosome Affinity Purification (NaP-TRAP) is a massively parallel reporter assayed that measures the translation of thousands of reporters simultanously through the immunocapture of epitope tagged nacscent chain complexes. 
 
 ## Installation 
-<!---
-To install the NaP-TRAP pipeline run the following command:
-
-```
-pip install naptrap (??)
-```
---->
 
 The package has been tested on Python3.11+. ⚠️ To install the package , we highly recommend first [creating a Python 3 virtual environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html).
 
@@ -26,7 +19,7 @@ pip install -e . # Install NaP-TRAP package and core dependencies
 
 ## Overview
 
-The pipeline takes as an input mapped high-throughput sequencing reads the form on `.sam` or `.bam` files file and returns processed count tables and read filtered translation values as well as some basic plots. The pipeline is managed using a centralized `build.toml` file. Information on the syntax of `.toml` files can be located [here](https://toml.io/en/).
+The pipeline takes as an input mapped high-throughput sequencing reads the form on `.sam` or `.bam` files and returns processed count tables and read filtered translation values as well as some informative plots. The pipeline is managed using a centralized `build.toml` file. Information on the syntax of `.toml` files can be located [here](https://toml.io/en/).
 
 **The following commands, written in the order of usage , can be used to run the pipeline:**
 
@@ -51,7 +44,7 @@ naptrap read_cutoff     -i path/to/count/files/ \
 
 ### Build
 ```
-naptrap build path/to/build.toml
+naptrap build --toml_path path/to/build.toml
 ```
 ### Plot replicates
 
@@ -97,16 +90,17 @@ naptrap plot_enrichment    --db path/to/sql/database.db \
 |||--selector| Selector to plot replicates of (Only 1 selector can be plotted at a time)||
 |||--samples | List of samples to plot. If not used, plots all samples in the selector||
 |||--fig_format| Format to save the figures in (png, pdf, svg, etc), defaults to svg|
-|`plot _enrichment`|Plots the scatter plot of enrichment groups between samples (If 2 samples provided) or the histogram of enrichment groups for a sample as well as the enrichment volano plots of their corresponding groups| --db |Path to the SQLite database| Enrichment scatterplot (for 2 samples) or histogram (1 sample) , volcano plots and table with enrichment of kmers|
+|`plot _enrichment`|Define reporter gtoups based on translation distributions as scatter plot (2 sample provided) or histogram (if only 1 sample) and plot volcano plots of kmer enrichment for each reporter group.| --db |Path to the SQLite database| Enrichment scatterplot (for 2 samples) or histogram (1 sample) , volcano plots and table with enrichment of kmers|
 |||--out|Output path for the SQL database||
+|||--klen| Length of the kmers to plot||
 |||--fig| Path to save the figures (Optional, Defaults to the output path)|
-|||--selector| Selector to plot replicates of (Only 1 selector can be plotted at a time)||
+|||--selector| Selector name as defined in the `selector.toml` to plot replicates of (only 1 selector can be plotted at a time)||
 |||--samples | List of samples to plot. If not used, plots all samples in the selector however the number of samples must be within 1-2||
 |||--fig_format| Format to save the figures in (png, pdf, svg, etc), defaults to svg|
 
 ## Structure of build.toml
 
-The `build.toml` file contains several different sections. Note not all sections are neccessary for the pipeline to run. For example, if you do not need to add no data to the DB, you can exclude the data section of the `build.toml`. **(All paths need to be absolute paths except files present within the github repository)**
+The `build.toml` file contains several different sections. Note not all sections are neccessary for the pipeline to run. **(All paths need to be absolute paths except files present within the github repository)**
 
 ### paths
 
@@ -126,13 +120,13 @@ fasta_path = 'doc/reporters.fa' # not to be changed (unless custom reporters are
 
 `schema_path`: path to the SQLite database schema (⚠️ **DO NOT CHANGE** To be kept same as the schema path in the example `build.toml` file).
 
-`fasta_path`: path to fasta containing library reporters and spike ins sequences.  ⚠️ **DO NOT CHANGE** To be kept same as the fasta path in the example `build.toml`. If custom reporters need to be used provide the absolute path to the file here and add the `#reporter` or `#spikein` tag to the reporter name. Insert names must be the same as one used for bowtie alignment
+`fasta_path`: path to fasta containing library reporters and spike ins sequences.  ⚠️ **DO NOT CHANGE** To be kept same as the fasta path in the example `build.toml`. If custom reporters need to be used provide the absolute path to the fasta file here and add the `#reporter` or `#spikein` tag to the reporter name. A new bowtie index needs to be built using the new fasta file for bowtie alignment.
 
-`selector_path`: path to the `selector.toml` file with instructions to create selectors for analysis and filtering (refer below)
+`selector_path`: path to the `selector.toml` file with instructions to create selectors for analysis and filtering (refer below).
 
 ### constants
 
-`[constants]` supplies are a set of constants for feature calculation
+`[constants]` supplies are a set of constant parameters for feature calculation.
 
 ```
 adaptor_5p = 'GAATACAAGCCCTACACGACGCTCTTCCGATCT' 
@@ -143,11 +137,11 @@ kozak_score_path = 'doc/kozak.json'
 ```
 `adaptor_5p`: 5' fixed reporter sequence (beginning of transcript).
 
-`adaptor_3p`: 3' fixed reporter sequence (end of the transcript)
+`adaptor_3p`: 3' fixed reporter sequence (end of the transcript).
 
-`main_orf_start`: Start of the main ORF , in the 3' fixed reporter sequence using 0-based coordinates (important for 5'-UTR library and annotated uORFs and oORFs)
+`main_orf_start`: Start of the main ORF , in the 3' fixed reporter sequence using 0-based coordinates (important for 5'-UTR library and annotated uORFs and oORFs).
 
-`kozak_score_path`: Path to kozak scores ⚠️ **DO NOT CHANGE** To be kept same as the kozak_score_path in the example `build.toml`. If custom kozak scores need to be used provide the absolute path to the file here
+`kozak_score_path`: Path to kozak scores ⚠️ **DO NOT CHANGE** To be kept same as the kozak_score_path in the example `build.toml`. If custom kozak scores need to be used provide the absolute path to the file here.
 
 ### features
 
@@ -157,8 +151,8 @@ kozak_score_path = 'doc/kozak.json'
 kmer_counter = [{kmax = 6}] 
 orf_finder = [{start_codons = ['ATG']}]
 ```
-`kmer_counter`: Generates kmers for features, kmax provides maximum number of k-mers to to generate features of
-`orf_finder`: ORFs to find within the insert, will annotate them (uORF/in frame or out of frame oORFs), can additionally detect alternate start codons if provided
+`kmer_counter`: Count every kmers for each insert. kmax provides the maximum length of kmer to include in the analysis.
+`orf_finder`: ORFs identifies every ORF within each reporter. These include uORF and oORFs; in or out of frame. It can additionally identify ORFs with alternate start codons if provided.
 
 ### analyses
 
@@ -167,7 +161,7 @@ orf_finder = [{start_codons = ['ATG']}]
 ```
 enrichment = [{rnum = 0.1, kmin = 1, kmax = 6}]
 ```
-`enrichment` Function to calculate enrichment values for the features generated in the `[features]` section. rnum is the proportion of reporters to delegate to each enrichment group, kmin, kmax are the minimum and maximum length of the kmers to be analysed respectively. (Do not exceed the kmin,kmax provided in features)
+`enrichment` Function to calculate kmer enrichment values between different group of reporters. rnum is the proportion of reporters to delegate to each reporter group, kmin, kmax are the minimum and maximum length of the kmers to be analysed respectively. (Do not exceed the kmin,kmax provided in `[features]`)
 
 ### data
 
@@ -190,23 +184,23 @@ ntrap_utr5_fish_pa = 'path/to/fish_pA_counts.json'
 
 `[data.samples.<insert_sample_name_here>]` here we provide details such as the organism, library, collection time and experiment name for reference for each sample
 
- `[data.samples.<insert_sample_name.runs>]` here the details of of each run are described  
-Each run (with the same name as that in the count_reads output) is attributed a replicate name and a run type (used above to calculate translation)
+ `[data.samples.<insert_sample_name.runs>]` run annotation
+Each run (with the same name as that in the count_reads output) is attributed a replicate name and a run type (used below to calculate translation).
 
 ```
 [data.samples.pa_2hpf]
+
 experiment_name = 'ntrap_utr5_fish_pa'
 collection_time = 2
 library = '60A'
-organism = 'Danio rerio`
-data_path = 'sample_data/'
-
+organism = 'Danio rerio'
 
 [data.samples.pa_2hpf.runs]
-JBN000414 = {replicate_name = 'B1', run_type = 'input'} 
-JBN000420 = {replicate_name = 'B1', run_type = 'flag_pulldown'}                            
-JBN000415 = {replicate_name = 'B2', run_type = 'input'} 
-JBN000421 = {replicate_name = 'B2', run_type = 'flag_pulldown'}  
+
+SRR35883406_TAGCTT = {replicate_name = 'B1', run_type = 'input'}
+SRR35883406_GATCAG = {replicate_name = 'B2', run_type = 'input'}
+SRR35883405_TAGCTT = {replicate_name = 'B1', run_type = 'flag_pulldown'}
+SRR35883405_GATCAG = {replicate_name = 'B2', run_type = 'flag_pulldown'}
 .
 .
 .  
@@ -226,12 +220,12 @@ JBN000421 = {replicate_name = 'B2', run_type = 'flag_pulldown'}
 | :------:   |  :--------: | :------- |
 | replicate_name | string | Links sequencing runs corresponding to the same replicate. |
 | run_type       | string | Defines whether a run is an input or a flag_pulldown. These names are flexible and additional run types can be introduced (e.g. for multi-frame NaP-TRAP) as long as you are consistent |
-| filename       | string | optional parameter corresponding to `.sam` filename in the data directory. |
+
 
 
 #### functions
 
-`[data.functions]` keys are names of functions that can be performed on the data. Values correspond to lists of key/value pairs specifing function parameters. 
+`[data.functions]` keys are names of functions to be performed on the data. Values correspond to lists of key/value pairs specifing function parameters. 
 
 ```
 [data.functions]
@@ -247,7 +241,7 @@ calculate_delta = [{samples = ['pa_2hpf','sv40_2hpf','pa_6hpf','sv40_6hpf','hek2
 
 #### spike_ins
 
-NaP-TRAP reporter experiments utilize spikeins to normalize translation values accross experimental conditions. These spike-ins are reporters not found in the MPRA reporter library that are introduced to the experiment at the RNA extraction step at fixed concentrations. Note in order to utilize spikeins for normalization spikeins must be included in the `reporter.fa` file supplied in `[paths]`.
+NaP-TRAP experiments can utilize spikeins to normalize translation values accross experimental conditions. These spike-ins are reporters not found in the MPRA reporter library that are introduced to the experiment at the RNA extraction step at fixed concentrations. Note in order to utilize spikeins for normalization spikeins must be included in the `reporter.fa` file supplied in `[paths]`.
 
 In `[data.spike_ins]` sample names are listed as keys whereas values correspond key-value pairs associated with spike_ins for each sample.
 
@@ -256,20 +250,24 @@ In `[data.spike_ins]` sample names are listed as keys whereas values correspond 
 utr5_fish_run1_pa_2hpf = {spike_ins_to_exclude = ['ntrap_spike_3']}
 ```
 
-For example, we can exclude spike_in 3 if the reads of the spike_in do not correspond to the amount added.  
+For example, we can exclude ntrap_spike_3 if the reads of the spike_in do not correspond to the amount added.  
 
 
 ## Structure of selector.toml
 
 ### selectors
 
-`[selectors]` contains the different filters across samples to be applied for analysis. Multiple samples makes sure the reporters and values are constant across the provided samples.
+`[selectors]` contains the different filters across samples to be applied for analysis. Will select group of reporters meeting specific thresholds across all provided samples
 
-`sample_names`: Samples to be utilized for a specific selector
+`[selectors.<insert_selector_name_here>]`: here we define the selectors and their attributes as shown below.
+
+`sample_names`: Samples to include in a specific selector
 
 `data_types`: The mean of the data_types mentioned in the calculate_delta function in the `build.toml` file. For `data_type = 'translation'` in calculate_delta, the `data_types` in `selector.toml` would be `'mean_translation'`
 
-`read_filters`: filters to be added based on the read count (raw or normalized) for the reporters
+`read_filters`: filters to be added based on the read count (raw or normalized) for the reporters.
+
+In the example below only reporters with >=100 read counts across all input sample replicates will be included in this selector.
 
 ```
 [selectors]
@@ -306,6 +304,8 @@ MPRA data are stored in an sqlite database. Below we have detailed how the datab
 
 ### Requirements
 
+**If using .bam files for counting reads:** `samtools>=1.21`
+
 Python Package versions (python 3.12.6):
 
 - `numpy==2.1.1`
@@ -317,4 +317,18 @@ Python Package versions (python 3.12.6):
 - `scipy==1.14.1`
 - `toml==0.10.2`
 - `seaborn==0.13.2`
+
+&nbsp;&nbsp;&nbsp;&nbsp; 
+
+# Citations
+
+**For the protocol and software, please cite:**
+
+Lorem ipsum dolor sit amet. [link](https://en.wikipedia.org/wiki/Lorem_ipsum)
+
+**For the NaP-TRAP analysis, please cite:**
+
+E.Strayer, J.D.Beaudoin & A.Giraldez. NaP-TRAP reveals the regulatory grammar in 5’UTR-mediated translation regulation during zebrafish development.Nat. Comm. vol 15, Article number: 10898 (2024). [link](https://www.nature.com/articles/s41467-024-55274-y)
+
+
 
