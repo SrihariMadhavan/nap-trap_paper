@@ -19,7 +19,7 @@ pip install -e . # Install NaP-TRAP package and core dependencies
 
 ## Overview
 
-The pipeline takes as an input mapped high-throughput sequencing reads the form on `.sam` or `.bam` files and returns processed count tables and read filtered translation values as well as some informative plots. The pipeline is managed using a centralized `build.toml` file. Information on the syntax of `.toml` files can be located [here](https://toml.io/en/).
+The pipeline takes as an input mapped high-throughput sequencing reads the form on `.sam` or `.bam` files and returns processed count tables and read filtered translation values as well as some informative plots. The pipeline is managed using a centralized `build.toml` file. Information on the syntax of `.toml` files can be found [here](https://toml.io/en/).
 
 **The following commands, written in the order of usage , can be used to run the pipeline:**
 
@@ -73,12 +73,12 @@ naptrap plot_enrichment    --db path/to/sql/database.db \
 
 |Subcommand |  Function|Parameters|Explanation| Output|
 |:---------: | :---------:| :-----:|:---------:| :----:|
-| `count`       |counts the number of reads for each reporter in each run and provides a `counts.json` file | -i     |  Input path (regex in quotes) to the  `.sam` files | `counts.json` file with read counts for each reporter in each run|
+| `count`       |counts the number of reads for each reporter in each run and provides a `counts.json` file | -i     |  Regular expression used to select all `SAM` files from the aligning directory (note that you must provide the full path from the root directory). Input alignment files can be in either `.sam`, `.bam` or `.sam.zst`| `counts.json` file with read counts for each reporter in each run|
 | ||-o| Path to output the `counts.json` files|
 |||-t|Temporary path for `count` for intermediate files|
 |||-p|Number of Processors to utilize|
-|||-m1|Minimum number of matches in a read to a specific reporter|
-|||-d1| Maximum edit distance of a read from a sepcific reporter|
+|||-m1|Minimum number of matches in a read to a specific reporter minimum number of matches (determined from the CIGAR string in the `SAM/BAM` file)|
+|||-d1| Maximum edit distance of a read from a sepcific reporter (determined by the NM tag in the `SAM/BAM` file)|
 |`read_cutoff`|analyse the count files generated to decide upon a read_count cutoff based on the histogram and cutoff tables generated for each run.| -i | Input path to the `counts.json` file generated in `counts`| Histogram plots of read count vs number of reporters histogram and a cutoff vs number of reporters table|
 |||-o| Output path for the table and plots||
 |||-f| Format to save the figures in (defaults to 'svg')|
@@ -90,7 +90,7 @@ naptrap plot_enrichment    --db path/to/sql/database.db \
 |||--selector| Selector to plot replicates of (Only 1 selector can be plotted at a time)||
 |||--samples | List of samples to plot. If not used, plots all samples in the selector||
 |||--fig_format| Format to save the figures in (png, pdf, svg, etc), defaults to svg|
-|`plot _enrichment`|Define reporter gtoups based on translation distributions as scatter plot (2 sample provided) or histogram (if only 1 sample) and plot volcano plots of kmer enrichment for each reporter group.| --db |Path to the SQLite database| Enrichment scatterplot (for 2 samples) or histogram (1 sample) , volcano plots and table with enrichment of kmers|
+|`plot _enrichment`|Define reporter gtoups based on translation distributions as scatter plot (if 2 sample provided) or histogram (if only 1 sample provided) and plot volcano plots of kmer enrichment for each reporter group.| --db |Path to the SQLite database| Enrichment scatterplot (for 2 samples) or histogram (1 sample), volcano plots and table with enrichment of kmers|
 |||--out|Output path for the SQL database||
 |||--klen| Length of the kmers to plot||
 |||--fig| Path to save the figures (Optional, Defaults to the output path)|
@@ -98,9 +98,9 @@ naptrap plot_enrichment    --db path/to/sql/database.db \
 |||--samples | List of samples to plot. If not used, plots all samples in the selector however the number of samples must be within 1-2||
 |||--fig_format| Format to save the figures in (png, pdf, svg, etc), defaults to svg|
 
-## Structure of build.toml
+## Structure of the build.toml
 
-The `build.toml` file contains several different sections. Note not all sections are neccessary for the pipeline to run. **(All paths need to be absolute paths except files present within the github repository)**
+The `build.toml` file contains several different sections. Note not all sections are necessary for the pipeline to run. An example of a build_db.toml file with extensive annotation and instructions can be found in `supplementary/builddb/build_db.toml`. **(All paths need to be absolute paths except files present within the github repository)**
 
 ### paths
 
@@ -111,7 +111,7 @@ The `build.toml` file contains several different sections. Note not all sections
 db_path = 'path/to/save/data.db'
 schema_path = 'doc/db_schema.sql' # Not to be changed
 output_path = 'path/to/output/folder'
-fasta_path = 'doc/reporters.fa' # not to be changed (unless custom reporters are used)
+fasta_path = 'doc/reporters.fa' # Not to be changed (unless custom reporters are used)
 ```
 
 `db_path`:  path to save the SQLite database storing sequencing data and reporter features
