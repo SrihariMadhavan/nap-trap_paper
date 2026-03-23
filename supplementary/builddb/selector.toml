@@ -3,6 +3,7 @@
 # This toml file provides instructions to the pipeline
 # on generating the selectors and filters to apply to the data
 #
+# These selectors can facilitate dataset analysis when samples fall into distinct groups that should be analyzed separately, or when certain samples have substantially lower overall read depth
 #
 # The file begins with the [selectors] main section and
 # each [selectors.<insert your selector name here>] can be created with different
@@ -18,18 +19,17 @@
 
 [selectors.polyA_fish] # Initialize selector name
 sample_names = ['pa_2hpf', 'pa_6hpf'] # Samples to include in that selector
-data_types = ['mean_translation'] # Mean of the data_types mentioned int he calculate_delta function of the build.toml file. If use another string as 'translation' add 'mean_' as a prefix to the string used.
+data_types = ['mean_translation'] # Mean of the data_types mentioned in the calculate_delta function of the build.toml file. If use another string as 'translation' add 'mean_' as a prefix to the string used.
 read_filters = [['input','raw_count', '100']] # Add a filter by specifying the run_type, on the 'raw_count', of a minimum of 100 raw counts. Another list can be added for additional filter e.g. ['flag_pulldown','raw_count', '5'] select reporters with at least 100 raw counts in input and 5 raw counts in flag_pulldown.
-
 
 [selectors.polyA_fish_hek293t]
 sample_names = ['pa_2hpf', 'pa_6hpf', 'hek293t_12h']
 data_types = ['mean_translation']
 read_filters = [['input','raw_count', '100']]
 
-
 [selectors.polyA_hek293t]
 sample_names = ['hek293t_12h']
 data_types = ['mean_translation']
 read_filters = [['input','raw_count', '100']]
+
 
