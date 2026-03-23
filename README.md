@@ -321,11 +321,11 @@ Python Package versions (python 3.12.6):
 &nbsp;&nbsp;&nbsp;&nbsp; 
 
 # Citations
-
+<!---
 **For the protocol and software, please cite:**
 
 Lorem ipsum dolor sit amet. [link](https://en.wikipedia.org/wiki/Lorem_ipsum)
-
+--->
 **For the NaP-TRAP analysis, please cite:**
 
 E.Strayer, J.D.Beaudoin & A.Giraldez. NaP-TRAP reveals the regulatory grammar in 5’UTR-mediated translation regulation during zebrafish development.Nat. Comm. vol 15, Article number: 10898 (2024). [link](https://www.nature.com/articles/s41467-024-55274-y)
