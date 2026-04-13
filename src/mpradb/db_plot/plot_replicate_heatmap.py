@@ -46,13 +46,16 @@ def plot_replicate_heatmap(db,selector_name,output_path = None, sample_names = N
 
     selector_id = db[['reporter_group_id']].where(db['reporter_group_name'] == reporter_group_name).fetchone()
     sample_id = set(db[['sample_id']].where(db['sample_name'].in_(sample_names)).to_list())
-
+    #print(f"sample_names = {sample_names}")
+    #print(f"sample_id = {sample_id}")
     reporter_ids = set(db[['reporter_id']].where(db['reporter_group_id'] == selector_id).to_list())
+    #print(f"len(reporter_ids) = {len(reporter_ids)}")
     sample_reporters = set(db[['reporter_id']].where((db['sample_id'].in_(sample_id)) ).to_list())
+    #print(f"len(sample_reporters) = {len(sample_reporters)}")
     reporter_ids = reporter_ids & sample_reporters
     replicate_ids = set(db[['data_id']].where((db['reporter_group_id'] == selector_id) & (db['sample_id'].in_(sample_id))).to_list())
-
-    print(replicate_ids)
+    #print(f"len(reporter_ids) = {len(reporter_ids)}")
+    #print(f"replicate_ids = {replicate_ids}")
     replicate_info = {}
     q = db.select(['data_id','sample_name','data_type', 'replicate_name']).where(db['data_id'].in_(replicate_ids)).to_dict(key = ['data_id'])
     for k,v in q.items():

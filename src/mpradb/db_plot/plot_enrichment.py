@@ -47,6 +47,7 @@ def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen
             df2 = db[['reporter_id','sample_name','processed_data_value']].where(db['sample_name'].in_(list(sample_names))).to_df()
 
             df = df1.merge(df2,on='reporter_id')
+            print(f"df shape = {df.shape}")
 
             tcompares = df['reporter_group_name'].apply(lambda x: ('s1' in x)and (all([samp in x for samp in sample_names])) and ('s2' in x)).tolist()
             
@@ -128,9 +129,11 @@ def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen
         print(f"Using cutoff of {rnum_calc} for histogram")
 
         reporter_list = db['reporter_id'].where(db['reporter_group_name']==reporter_group_name).to_list()
+        print(f"reporter_list length = {len(reporter_list)}")
         fulldf = db[['reporter_id','sample_name','processed_data_value']].where((db['reporter_id'].in_(reporter_list)) & (db['sample_name'] == (sample_names))).to_df()
+        
         fulldf = fulldf.groupby(['reporter_id','sample_name'],as_index=False)['processed_data_value'].mean()
-
+        print(f"fulldf shape = {fulldf.shape}")
         #rnum_calc = rnum_calc/num_rep
 
         #fulldf = fulldf.pivot_table(index='reporter_id',columns = 'sample_name',values= 'processed_data_value').reset_index()
@@ -158,7 +161,7 @@ def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen
     rgids = list(rgroup_lookup.keys())
     kmers = db['reporter_group_id', 'feature_name','enrichment_pvalue','enrichment_fold_change'].where((db['reporter_group_id'].in_(rgids)) & (db['feature_type'] == f'count_{klen}mer') &  (db['enrichment_pvalue'] != 1)).to_dict(group_by_key = True, key = ['reporter_group_id'])
 
-    
+    filtered_rgids = []
 
     for rgid, fenrich in kmers.items():
 
@@ -173,6 +176,8 @@ def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen
             scatter_group_ids = db['reporter_group_id'].where(db['reporter_group_name'].in_(list(reporter_rel_list))).to_list()
             if rgid not in scatter_group_ids:
                 continue
+        
+        filtered_rgids.append(rgid)
 
         fenrich = sorted(fenrich, key = lambda a : a[-1])
         group_name, group_type = rgroup_lookup[rgid]
@@ -215,13 +220,15 @@ def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen
         fig.savefig(f"{fig_save_path}Reporter_group_{rgroup_lookup[rgid][0]}_RGID_{rgid}_type_{rgroup_lookup[rgid][1]}.{fig_save_format}",bbox_inches='tight')
    
    
-    return_df =  db['reporter_group_name','reporter_group_type', 'feature_name','enrichment_pvalue','enrichment_fold_change'].where((db['reporter_group_id'].in_(rgids)) & (db['feature_type'] == f'count_{klen}mer') &  (db['enrichment_pvalue'] != 1)).to_df()
+    return_df =  db['reporter_group_name','reporter_group_type', 'feature_name','enrichment_pvalue','enrichment_fold_change'].where((db['reporter_group_id'].in_(filtered_rgids)) & (db['feature_type'] == f'count_{klen}mer') &  (db['enrichment_pvalue'] != 1)).to_df()
 
     if scatter_flag:
         return_df = return_df[return_df['reporter_group_name'].apply(lambda x: ('s1' in x) and ('s2' in x))]
-    else:
+    elif hist_flag:
 
         return_df = return_df[return_df['reporter_group_name'].apply(lambda x: ('s1' not in x) and ('s2' not in x))]
+
+
 
 
     return_df['feature_name'] = return_df['feature_name'].apply(lambda x: x.split('_')[0])
@@ -230,6 +237,11 @@ def plot_enrichment(db, selector_name,fig_save_path=None,sample_names=None, klen
 
     #return_df.to_csv(f"{fig_save_path}/enrichment_of_{klen}mers_{selector_name}_{'_'.join(sample_names)}.to_csv")
     return_dict = {}
+
+    if not scatter_flag and not hist_flag:
+        print("No scatter or histogram plot generated, returning enrichment dataframe without separating by group type")
+        return_df.to_csv(f"{fig_save_path}/enrichment_of_{klen}mers_{selector_name}_{'_'.join(sample_names)}.csv",index=False)
+        return {'enrichment': return_df}
 
     sample_string = sample_names if(isinstance(sample_names,str)) else '_'.join(sample_names)
 

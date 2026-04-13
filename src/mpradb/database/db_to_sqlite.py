@@ -2,7 +2,7 @@ import os
 import sqlite3
 import hashlib
 import itertools
-
+from collections import deque
 import pandas as pd
 import numpy as np
 import logging
@@ -492,7 +492,7 @@ class DB_SQLite(Select_to_SQL):
 
     def execute_selection(self, reset_query = True):
 
-        tables, join_str = self.get_tables(self.query_columns)
+        tables, join_str = self.get_tables2(self.query_columns)
         self.add_table_to_query(tables[0])
 
         if self.columns_to_group is not None or join_str is not None:
@@ -507,7 +507,7 @@ class DB_SQLite(Select_to_SQL):
 
         
         sql_str, select_columns = self.get_sql_query(ambiguous_col = ambiguous_col, reset_query = reset_query)
-
+        #print(f"sql_str: {sql_str}")
         return sql_str, select_columns
 
 
@@ -830,6 +830,100 @@ class DB_SQLite(Select_to_SQL):
             raise Exception('Selection is not possible!')
         
         return tables_added, join_str
+    
+    def get_tables2(self, columns):
+        """
+        Drop-in replacement for get_tables().
+        Finds the minimum set of JOINs to cover all requested columns by searching
+        the table graph directly — tables are chosen by shortest path, not pre-selected.
+
+        Returns: (tables_added, join_str)
+        """
+
+        clean_cols = []
+        for c in columns:
+            c = c.replace('(', ')').split(')')
+            c = c[1] if len(c) == 3 else c[0]
+            if c not in self.column_lookup:
+                self.reset_query()
+                raise Exception(f'Column {c} not found in database!')
+            clean_cols.append(c)
+
+        col_to_tables = {c: set(self.column_lookup[c]) for c in clean_cols}
+
+        all_candidate_tables = set(t for tables in col_to_tables.values() for t in tables)
+        for t in all_candidate_tables:
+            if all(t in col_to_tables[c] for c in clean_cols):
+                return [t], None
+
+        cols_needed = frozenset(clean_cols)
+
+        def cols_covered_by(table):
+            return frozenset(c for c in clean_cols if table in col_to_tables[c])
+
+        start_states = [
+            (t, cols_covered_by(t))
+            for t in self.table_conn
+            if cols_covered_by(t)           
+        ]
+
+        best = None 
+
+        for start_table, start_covered in start_states:
+
+            if start_covered == cols_needed:
+                return [start_table], None
+
+            queue   = deque([(start_table, start_covered, [start_table])])
+            visited = {(start_table, start_covered)}
+
+            while queue:
+                node, covered, path = queue.popleft()
+
+                if best is not None and len(path) >= len(best):
+                    continue
+
+                for neighbour in self.table_conn.get(node, []):
+                    new_covered = covered | cols_covered_by(neighbour)
+                    state       = (neighbour, new_covered)
+                    new_path    = path + [neighbour]
+
+                    if new_covered == cols_needed:
+                        if best is None or len(new_path) < len(best):
+                            best = new_path
+                        break  
+
+                    if state not in visited:
+                        if best is None or len(new_path) < len(best):
+                            visited.add(state)
+                            queue.append((node, covered, path))  
+                            queue.append((neighbour, new_covered, new_path))
+
+        if best is None:
+            self.reset_query()
+            raise Exception(
+                f"Cannot satisfy columns {clean_cols} with any join path. "
+                "Check your foreign key definitions."
+            )
+
+        join_str     = []
+        tables_added = [best[0]]
+
+        for a, b in zip(best, best[1:]):
+            table_key = tuple(sorted([a, b]))
+            if table_key not in self.foreign_keys:
+                self.reset_query()
+                raise Exception(f"No foreign key between '{a}' and '{b}'.")
+
+            jstr = tuple(self.foreign_keys[table_key])
+            if jstr not in join_str and jstr[::-1] not in join_str:
+                join_str.append(jstr)
+
+            if b not in tables_added:
+                tables_added.append(b)
+
+        return tables_added, join_str
+    
 
 
     def find_path(self, t1,t2, prev_tables = None, rlev = 0):

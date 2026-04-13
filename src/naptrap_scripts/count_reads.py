@@ -76,9 +76,10 @@ class Aligned_Read:
 
             setattr(self,k,v)
 
+
     def read_passed(self):
 
-        if self.edit_distance <= self.NM or self.matches <= self.min_matches:
+        if self.edit_distance < self.NM or self.matches < self.min_matches:
             return False
         else:
             return True
