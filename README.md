@@ -321,14 +321,14 @@ Python Package versions (python 3.12.6):
 &nbsp;&nbsp;&nbsp;&nbsp; 
 
 # Citations
-<!---
+
 **For the protocol and software, please cite:**
 
-Lorem ipsum dolor sit amet. [link](https://en.wikipedia.org/wiki/Lorem_ipsum)
---->
+ A.Gupta, A.Z.Struba, S.Madhavan, E.Strayer, J.D.Beaudoin. NaP-TRAP: A versatile and accessible workflow to dissect principles of translational regulation and mRNA stability. ([link](https://www.biorxiv.org/content/10.64898/2026.04.12.718002v1))
+
 **For the NaP-TRAP analysis, please cite:**
 
-E.Strayer, J.D.Beaudoin & A.Giraldez. NaP-TRAP reveals the regulatory grammar in 5’UTR-mediated translation regulation during zebrafish development.Nat. Comm. vol 15, Article number: 10898 (2024). [link](https://www.nature.com/articles/s41467-024-55274-y)
+E.Strayer, J.D.Beaudoin & A.Giraldez. NaP-TRAP reveals the regulatory grammar in 5’UTR-mediated translation regulation during zebrafish development.Nat. Comm. vol 15, Article number: 10898 (2024). ([link](https://www.nature.com/articles/s41467-024-55274-y))
 
 
 
